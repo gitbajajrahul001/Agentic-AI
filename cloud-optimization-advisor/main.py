@@ -4,14 +4,14 @@ from app.core.config_loader import ConfigLoader
 from app.connectors.azure.authentication_connector import (
     AzureAuthenticationConnector,
 )
+from app.connectors.azure.subscription_connector import (
+    SubscriptionConnector,
+)
 
 console = Console()
 
 
 def main():
-    """
-    Application Entry Point
-    """
 
     console.rule("[bold blue]Cloud Optimization Advisor[/bold blue]")
 
@@ -26,7 +26,7 @@ def main():
     )
 
     #
-    # Authenticate to Azure
+    # Authenticate
     #
     authentication_connector = AzureAuthenticationConnector(
         config["azure"]
@@ -39,10 +39,26 @@ def main():
         style="green"
     )
 
-    console.print(
-        f"Credential Type : {type(credential).__name__}",
-        style="cyan"
+    #
+    # Discover subscriptions
+    #
+    subscription_connector = SubscriptionConnector(
+        credential
     )
+
+    subscription_ids = (
+        subscription_connector.get_subscription_ids()
+    )
+
+    console.print(
+        f"✓ Found {len(subscription_ids)} subscription(s).",
+        style="green"
+    )
+
+    console.print()
+
+    for subscription_id in subscription_ids:
+        console.print(f"• {subscription_id}")
 
 
 if __name__ == "__main__":

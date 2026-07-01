@@ -4,6 +4,7 @@ azure-mgmt-compute
 azure-monitor-query
 azure-mgmt-costmanagement
 azure-mgmt-advisor
+azure-mgmt-resourcegraph
 
 requests
 PyYAML

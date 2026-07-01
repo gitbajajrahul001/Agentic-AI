@@ -1,10 +1,10 @@
 azure:
 
-  tenant_id: ""
+  tenant_id: 
 
-  client_id: ""
+  client_id: 
 
-  client_secret: ""
+  client_secret: 
 
 observation_window: 30
 
