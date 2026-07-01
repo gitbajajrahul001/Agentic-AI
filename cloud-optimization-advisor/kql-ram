@@ -1,0 +1,23 @@
+=============
+Average RAM usage
+=============
+
+Perf
+| where CounterName == "% Committed Bytes In Use"
+| summarize AvgRAM = avg(CounterValue) by Computer
+
+=============
+Peak RAM usage
+=============
+
+Perf
+| where CounterName == "% Committed Bytes In Use"
+| summarize PeakRAM = max(CounterValue) by Computer
+
+=============
+95th percentile RAM
+=============
+
+Perf
+| where CounterName == "% Committed Bytes In Use"
+| summarize P95RAM = percentile(CounterValue, 95) by Computer
