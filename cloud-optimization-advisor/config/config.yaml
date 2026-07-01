@@ -1,10 +1,10 @@
 azure:
 
-  tenant_id: "<TENANT_ID>"
+  tenant_id: "a1fc66b2-0613-42f5-a738-1f1e8a62bce0"
 
-  client_id: "<CLIENT_ID>"
+  client_id: "9be84fbf-92ab-4b3b-a039-9f85751a4762"
 
-  client_secret: "<CLIENT_SECRET>"
+  client_secret: "w398Q~TSs~HEdE1IoX1Bddu_SH-sDZs6Y.pOwcmO"
 
 observation_window: 30
 
