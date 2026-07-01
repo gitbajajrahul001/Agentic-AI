@@ -1,0 +1,11 @@
+azure-identity
+azure-mgmt-subscription
+azure-mgmt-compute
+azure-monitor-query
+azure-mgmt-costmanagement
+azure-mgmt-advisor
+
+requests
+PyYAML
+pydantic
+rich

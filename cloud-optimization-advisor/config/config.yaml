@@ -1,0 +1,17 @@
+azure:
+
+  tenant_id: "<TENANT_ID>"
+
+  client_id: "<CLIENT_ID>"
+
+  client_secret: "<CLIENT_SECRET>"
+
+observation_window: 30
+
+worker_threads: 20
+
+cache_minutes: 5
+
+logging:
+
+  level: INFO
