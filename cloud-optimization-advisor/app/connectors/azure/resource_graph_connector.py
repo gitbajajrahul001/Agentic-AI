@@ -1,5 +1,4 @@
-from azure.mgmt.resourcegraph import ResourceGraphClient
-from azure.mgmt.resourcegraph.models import QueryRequest
+import requests
 
 from app.models.azure_virtual_machine import AzureVirtualMachine
 
@@ -10,43 +9,62 @@ class ResourceGraphConnector:
 
     Responsibility
     --------------
-    Retrieve Azure Virtual Machine inventory using Azure Resource Graph.
-
-    Returns
-    -------
-    list[AzureVirtualMachine]
+    Retrieve Azure Virtual Machine inventory
+    using Azure Resource Graph REST API.
     """
+
+    RESOURCE_GRAPH_ENDPOINT = (
+        "https://management.azure.com/providers/"
+        "Microsoft.ResourceGraph/resources"
+        "?api-version=2022-10-01"
+    )
 
     def __init__(self, credential, subscription_ids):
 
-        self.client = ResourceGraphClient(credential)
+        self.credential = credential
         self.subscription_ids = subscription_ids
 
-    def get_virtual_machines(self):
+    def get_virtual_machines(self) -> list[AzureVirtualMachine]:
 
-        query = """
-        Resources
-        | where type =~ 'microsoft.compute/virtualmachines'
-        | project
-            id,
-            name,
-            subscriptionId,
-            resourceGroup,
-            location,
-            vmSize = tostring(properties.hardwareProfile.vmSize),
-            tags
-        """
-
-        request = QueryRequest(
-            subscriptions=self.subscription_ids,
-            query=query
+        token = self.credential.get_token(
+            "https://management.azure.com/.default"
         )
 
-        response = self.client.resources(request)
+        headers = {
+            "Authorization": f"Bearer {token.token}",
+            "Content-Type": "application/json"
+        }
+
+        body = {
+            "subscriptions": self.subscription_ids,
+            "query": """
+Resources
+| where type =~ 'microsoft.compute/virtualmachines'
+| project
+    id,
+    name,
+    subscriptionId,
+    resourceGroup,
+    location,
+    vmSize=tostring(properties.hardwareProfile.vmSize),
+    tags
+"""
+        }
+
+        response = requests.post(
+            self.RESOURCE_GRAPH_ENDPOINT,
+            headers=headers,
+            json=body,
+            timeout=60
+        )
+
+        response.raise_for_status()
+
+        data = response.json()
 
         virtual_machines = []
 
-        for row in response.data:
+        for row in data.get("data", []):
 
             virtual_machines.append(
 

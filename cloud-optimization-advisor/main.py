@@ -7,6 +7,9 @@ from app.connectors.azure.authentication_connector import (
 from app.connectors.azure.subscription_connector import (
     SubscriptionConnector,
 )
+from app.connectors.azure.resource_graph_connector import (
+    ResourceGraphConnector,
+)
 
 console = Console()
 
@@ -16,7 +19,7 @@ def main():
     console.rule("[bold blue]Cloud Optimization Advisor[/bold blue]")
 
     #
-    # Load Configuration
+    # Load configuration
     #
     config = ConfigLoader.load()
 
@@ -55,10 +58,30 @@ def main():
         style="green"
     )
 
+    #
+    # Discover virtual machines
+    #
+    resource_graph_connector = ResourceGraphConnector(
+        credential,
+        subscription_ids
+    )
+
+    virtual_machines = (
+        resource_graph_connector.get_virtual_machines()
+    )
+
+    console.print(
+        f"✓ Found {len(virtual_machines)} virtual machine(s).",
+        style="green"
+    )
+
     console.print()
 
-    for subscription_id in subscription_ids:
-        console.print(f"• {subscription_id}")
+    for vm in virtual_machines:
+
+        console.print(
+            f"{vm.name:30} {vm.vm_size:25} {vm.location}"
+        )
 
 
 if __name__ == "__main__":
