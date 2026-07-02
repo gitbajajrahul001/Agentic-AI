@@ -131,3 +131,67 @@ class ConsoleRenderer:
         )
 
         self.console.print(table)
+    ####################################################################
+    # VM Analysis
+    ####################################################################
+
+    def render_vm_analysis(
+        self,
+        analysis,
+    ) -> None:
+
+        table = Table(
+            title="Virtual Machine Analysis"
+        )
+
+        table.add_column(
+            "Property",
+            style="cyan"
+        )
+
+        table.add_column(
+            "Value"
+        )
+
+        table.add_row(
+            "Recommendation",
+            analysis.recommendation.value
+        )
+
+        table.add_row(
+            "Confidence",
+            analysis.confidence.value
+        )
+
+        table.add_row(
+            "Current VM Size",
+            analysis.current_vm_size
+        )
+
+        if analysis.recommended_vm_size:
+
+            table.add_row(
+                "Recommended VM Size",
+                analysis.recommended_vm_size
+            )
+
+        self.console.print(table)
+
+        observations = Table(
+            title="Observations"
+        )
+
+        observations.add_column(
+            "Observation",
+            style="green"
+        )
+
+        for observation in analysis.observations:
+
+            observations.add_row(
+                f"✓ {observation}"
+            )
+
+        self.console.print(
+            observations
+        )    

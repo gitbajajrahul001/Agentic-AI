@@ -1,26 +1,69 @@
+####################################################################
+# Telemetry Requirements
+####################################################################
+
 telemetry:
 
   #
-  # Observation window used for recommendations.
+  # Observation window used for analysis.
   #
   observation_window_days: 30
 
   #
-  # Minimum number of metric samples required.
+  # Minimum number of metric samples required
+  # before a recommendation can be trusted.
   #
-  minimum_sample_count: 24
+  minimum_sample_count: 10
 
   #
-  # Percentage of expected samples that must exist.
+  # Minimum percentage of expected samples that
+  # must be available.
   #
   minimum_coverage_percent: 5
 
   #
-  # If false, recommendations are rejected when
-  # confidence is insufficient.
+  # If true, recommendations may still be produced
+  # even when confidence is low.
   #
   allow_low_confidence: true
 
+####################################################################
+# Decision Policy
+####################################################################
+
+decision:
+
+  cpu:
+
+    #
+    # Recommend increasing VM capacity when the
+    # average CPU utilization exceeds this value.
+    #
+    upsize_threshold: 80
+
+    #
+    # CPU must remain below this value before a
+    # downsize can be considered.
+    #
+    downsize_threshold: 20
+
+  memory:
+
+    #
+    # Recommend increasing VM capacity when the
+    # average memory utilization exceeds this value.
+    #
+    upsize_threshold: 80
+
+    #
+    # Memory must remain below this value before a
+    # downsize can be considered.
+    #
+    downsize_threshold: 40
+
+####################################################################
+# Confidence Levels
+####################################################################
 
 confidence:
 
