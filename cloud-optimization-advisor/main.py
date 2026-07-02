@@ -136,6 +136,7 @@ def main():
         VirtualMachineMetricsConnector(
             credential,
             config["observation_window"],
+            config["log_analytics"]["workspace_id"],
         )
     )
 

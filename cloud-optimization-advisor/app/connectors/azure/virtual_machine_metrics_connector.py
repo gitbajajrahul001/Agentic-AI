@@ -1,5 +1,10 @@
 from datetime import datetime, timedelta
 
+from azure.monitor.query import (
+    LogsQueryClient,
+    LogsQueryStatus,
+)
+
 from app.connectors.azure.base_azure_connector import (
     BaseAzureConnector,
 )
@@ -25,17 +30,30 @@ from app.utils.statistics import (
 class VirtualMachineMetricsConnector(BaseAzureConnector):
     """
     Collects runtime telemetry for an Azure Virtual Machine.
+
+    CPU:
+        Azure Monitor Metrics API
+
+    Memory:
+        Azure Log Analytics (Perf table)
     """
 
     def __init__(
         self,
         credential,
         observation_window: int,
+        workspace_id: str,
     ):
 
         super().__init__(credential)
 
         self.observation_window = observation_window
+
+        self.logs_client = LogsQueryClient(
+            credential
+        )
+
+        self.workspace_id = workspace_id
 
     ####################################################################
     # Public API
@@ -58,6 +76,10 @@ class VirtualMachineMetricsConnector(BaseAzureConnector):
             metrics,
         )
 
+        #
+        # Remaining telemetry
+        #
+
         self._populate_network_metrics(
             vm,
             metrics,
@@ -68,6 +90,12 @@ class VirtualMachineMetricsConnector(BaseAzureConnector):
             metrics,
         )
 
+        #print()
+        #print("Memory Average :", metrics.memory_average_percent)
+        #print("Memory Max     :", metrics.memory_max_percent)
+        #print("Memory P95     :", metrics.memory_p95_percent)
+        #print()
+        
         return metrics
 
     ####################################################################
@@ -80,27 +108,27 @@ class VirtualMachineMetricsConnector(BaseAzureConnector):
         metrics: AzureVirtualMachineMetrics,
     ) -> None:
 
-        cpu_samples = self._get_metric_timeseries(
+        samples = self._get_metric_timeseries(
             vm,
             AzureMetricNames.CPU_PERCENTAGE,
         )
 
-        metrics.sample_count = len(cpu_samples)
+        metrics.sample_count = len(samples)
 
         metrics.cpu_average_percent = (
-            Statistics.average(cpu_samples)
+            Statistics.average(samples)
         )
 
         metrics.cpu_max_percent = (
-            Statistics.maximum(cpu_samples)
+            Statistics.maximum(samples)
         )
 
         metrics.cpu_p95_percent = (
-            Statistics.p95(cpu_samples)
+            Statistics.p95(samples)
         )
 
     ####################################################################
-    # Memory (Placeholder)
+    # Memory
     ####################################################################
 
     def _populate_memory_metrics(
@@ -109,10 +137,27 @@ class VirtualMachineMetricsConnector(BaseAzureConnector):
         metrics: AzureVirtualMachineMetrics,
     ) -> None:
 
-        pass
+        samples = self._get_memory_timeseries(
+            vm
+        )
+
+        if not samples:
+            return
+
+        metrics.memory_average_percent = (
+            Statistics.average(samples)
+        )
+
+        metrics.memory_max_percent = (
+            Statistics.maximum(samples)
+        )
+
+        metrics.memory_p95_percent = (
+            Statistics.p95(samples)
+        )
 
     ####################################################################
-    # Network (Placeholder)
+    # Network
     ####################################################################
 
     def _populate_network_metrics(
@@ -121,10 +166,16 @@ class VirtualMachineMetricsConnector(BaseAzureConnector):
         metrics: AzureVirtualMachineMetrics,
     ) -> None:
 
+        #
+        # MVP
+        #
+        # Implement later
+        #
+
         pass
 
     ####################################################################
-    # Disk (Placeholder)
+    # Disk
     ####################################################################
 
     def _populate_disk_metrics(
@@ -133,10 +184,16 @@ class VirtualMachineMetricsConnector(BaseAzureConnector):
         metrics: AzureVirtualMachineMetrics,
     ) -> None:
 
+        #
+        # MVP
+        #
+        # Implement later
+        #
+
         pass
 
     ####################################################################
-    # Shared Metric Retrieval
+    # Azure Monitor
     ####################################################################
 
     def _get_metric_timeseries(
@@ -144,33 +201,30 @@ class VirtualMachineMetricsConnector(BaseAzureConnector):
         vm: AzureVirtualMachine,
         metric_name: str,
     ) -> list[float]:
+        """
+        Retrieves hourly metric samples from Azure Monitor.
+        """
 
         observation_end = datetime.utcnow()
 
         observation_start = (
-            observation_end
-            - timedelta(days=self.observation_window)
+            observation_end -
+            timedelta(days=self.observation_window)
         )
 
         endpoint = (
             f"https://management.azure.com{vm.id}"
-            f"/providers/Microsoft.Insights/metrics"
+            "/providers/Microsoft.Insights/metrics"
         )
 
         params = {
-
             "api-version": AzureApiVersions.METRICS,
-
             "metricnames": metric_name,
-
             "timespan":
                 f"{observation_start.isoformat()}Z/"
                 f"{observation_end.isoformat()}Z",
-
             "interval": "PT1H",
-
-            "aggregation": "Average"
-
+            "aggregation": "Average",
         }
 
         response = self._get(
@@ -181,15 +235,78 @@ class VirtualMachineMetricsConnector(BaseAzureConnector):
         samples: list[float] = []
 
         for metric in response.get("value", []):
-
             for series in metric.get("timeseries", []):
-
                 for point in series.get("data", []):
+                    value = point.get("average")
 
-                    average = point.get("average")
+                    if value is not None:
+                        samples.append(
+                            float(value)
+                        )
 
-                    if average is not None:
+        return samples
 
-                        samples.append(float(average))
+    ####################################################################
+    # Azure Log Analytics
+    ####################################################################
+
+    def _get_memory_timeseries(
+        self,
+        vm: AzureVirtualMachine,
+    ) -> list[float]:
+        """
+        Retrieves Memory utilization from the Perf table.
+
+        Counter:
+            % Committed Bytes In Use
+        """
+
+        query = f"""
+Perf
+| where TimeGenerated > ago({self.observation_window}d)
+| where _ResourceId == "{vm.id.lower()}"
+| where ObjectName == "Memory"
+| where CounterName == "% Committed Bytes In Use"
+| project TimeGenerated, CounterValue
+| order by TimeGenerated asc
+"""
+
+        observation_end = datetime.utcnow()
+
+        observation_start = (
+            observation_end -
+            timedelta(days=self.observation_window)
+        )
+
+        result = self.logs_client.query_workspace(
+            workspace_id=self.workspace_id,
+            query=query,
+            timespan=(
+                observation_start,
+                observation_end,
+            ),
+        )
+
+        if result.status != LogsQueryStatus.SUCCESS:
+            return []
+
+        if not result.tables:
+            return []
+
+        table = result.tables[0]
+
+        if not table.rows:
+            return []
+
+        counter_value_index = table.columns.index(
+            "CounterValue"
+        )
+
+        samples = []
+
+        for row in table.rows:
+            samples.append(
+                float(row[counter_value_index])
+            )
 
         return samples

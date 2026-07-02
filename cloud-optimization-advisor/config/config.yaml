@@ -6,6 +6,9 @@ azure:
 
   client_secret: "w398Q~TSs~HEdE1IoX1Bddu_SH-sDZs6Y.pOwcmO"
 
+log_analytics:
+  workspace_id: "d1090953-acb4-45bf-957c-1acd70e9d5a4"
+  
 observation_window: 30
 
 worker_threads: 20

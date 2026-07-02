@@ -79,6 +79,10 @@ class ConsoleRenderer:
             justify="right"
         )
 
+        #
+        # CPU
+        #
+
         table.add_row(
             "CPU Average (%)",
             f"{metrics.cpu_average_percent:.2f}"
@@ -93,6 +97,33 @@ class ConsoleRenderer:
             "CPU P95 (%)",
             f"{metrics.cpu_p95_percent:.2f}"
         )
+
+        table.add_section()
+
+        #
+        # Memory
+        #
+
+        table.add_row(
+            "Memory Average (%)",
+            f"{metrics.memory_average_percent:.2f}"
+        )
+
+        table.add_row(
+            "Memory Maximum (%)",
+            f"{metrics.memory_max_percent:.2f}"
+        )
+
+        table.add_row(
+            "Memory P95 (%)",
+            f"{metrics.memory_p95_percent:.2f}"
+        )
+
+        table.add_section()
+
+        #
+        # Telemetry
+        #
 
         table.add_row(
             "Sample Count",
