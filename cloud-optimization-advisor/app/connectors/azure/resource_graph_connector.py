@@ -1,16 +1,15 @@
-import requests
+from app.connectors.azure.base_azure_connector import (
+    BaseAzureConnector
+)
 
-from app.models.azure_virtual_machine import AzureVirtualMachine
+from app.models.azure_virtual_machine import (
+    AzureVirtualMachine
+)
 
 
-class ResourceGraphConnector:
+class ResourceGraphConnector(BaseAzureConnector):
     """
     Azure Resource Graph Connector
-
-    Responsibility
-    --------------
-    Retrieve Azure Virtual Machine inventory
-    using Azure Resource Graph REST API.
     """
 
     RESOURCE_GRAPH_ENDPOINT = (
@@ -19,24 +18,24 @@ class ResourceGraphConnector:
         "?api-version=2022-10-01"
     )
 
-    def __init__(self, credential, subscription_ids):
+    def __init__(
+        self,
+        credential,
+        subscription_ids
+    ):
 
-        self.credential = credential
+        super().__init__(credential)
+
         self.subscription_ids = subscription_ids
 
-    def get_virtual_machines(self) -> list[AzureVirtualMachine]:
-
-        token = self.credential.get_token(
-            "https://management.azure.com/.default"
-        )
-
-        headers = {
-            "Authorization": f"Bearer {token.token}",
-            "Content-Type": "application/json"
-        }
+    def get_virtual_machines(
+        self
+    ) -> list[AzureVirtualMachine]:
 
         body = {
+
             "subscriptions": self.subscription_ids,
+
             "query": """
 Resources
 | where type =~ 'microsoft.compute/virtualmachines'
@@ -49,22 +48,17 @@ Resources
     vmSize=tostring(properties.hardwareProfile.vmSize),
     tags
 """
+
         }
 
-        response = requests.post(
+        response = self._post(
             self.RESOURCE_GRAPH_ENDPOINT,
-            headers=headers,
-            json=body,
-            timeout=60
+            body
         )
-
-        response.raise_for_status()
-
-        data = response.json()
 
         virtual_machines = []
 
-        for row in data.get("data", []):
+        for row in response.get("data", []):
 
             virtual_machines.append(
 

@@ -1,0 +1,31 @@
+telemetry:
+
+  #
+  # Observation window used for recommendations.
+  #
+  observation_window_days: 30
+
+  #
+  # Minimum number of metric samples required.
+  #
+  minimum_sample_count: 24
+
+  #
+  # Percentage of expected samples that must exist.
+  #
+  minimum_coverage_percent: 5
+
+  #
+  # If false, recommendations are rejected when
+  # confidence is insufficient.
+  #
+  allow_low_confidence: true
+
+
+confidence:
+
+  high: 90
+
+  medium: 70
+
+  low: 30

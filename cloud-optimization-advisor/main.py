@@ -1,26 +1,47 @@
 from rich.console import Console
 
 from app.core.config_loader import ConfigLoader
+from app.core.policy_loader import PolicyLoader
+
 from app.connectors.azure.authentication_connector import (
     AzureAuthenticationConnector,
 )
+
 from app.connectors.azure.subscription_connector import (
     SubscriptionConnector,
 )
+
 from app.connectors.azure.resource_graph_connector import (
     ResourceGraphConnector,
 )
+
+from app.connectors.azure.virtual_machine_metrics_connector import (
+    VirtualMachineMetricsConnector,
+)
+
+from app.renderers.console_renderer import (
+    ConsoleRenderer,
+)
+
 
 console = Console()
 
 
 def main():
+    """
+    Cloud Optimization Advisor
 
-    console.rule("[bold blue]Cloud Optimization Advisor[/bold blue]")
+    Application Entry Point
+    """
 
-    #
-    # Load configuration
-    #
+    console.rule(
+        "[bold blue]Cloud Optimization Advisor[/bold blue]"
+    )
+
+    ####################################################################
+    # Configuration
+    ####################################################################
+
     config = ConfigLoader.load()
 
     console.print(
@@ -28,25 +49,46 @@ def main():
         style="green"
     )
 
-    #
-    # Authenticate
-    #
-    authentication_connector = AzureAuthenticationConnector(
-        config["azure"]
+    ####################################################################
+    # Recommendation Policies
+    ####################################################################
+
+    recommendation_policy = PolicyLoader.load(
+        "recommendation_policy"
     )
 
-    credential = authentication_connector.authenticate()
+    console.print(
+        "✓ Recommendation policy loaded.",
+        style="green"
+    )
+
+    ####################################################################
+    # Authentication
+    ####################################################################
+
+    authentication_connector = (
+        AzureAuthenticationConnector(
+            config["azure"]
+        )
+    )
+
+    credential = (
+        authentication_connector.authenticate()
+    )
 
     console.print(
         "✓ Successfully authenticated to Azure.",
         style="green"
     )
 
-    #
-    # Discover subscriptions
-    #
-    subscription_connector = SubscriptionConnector(
-        credential
+    ####################################################################
+    # Subscriptions
+    ####################################################################
+
+    subscription_connector = (
+        SubscriptionConnector(
+            credential
+        )
     )
 
     subscription_ids = (
@@ -58,12 +100,15 @@ def main():
         style="green"
     )
 
-    #
-    # Discover virtual machines
-    #
-    resource_graph_connector = ResourceGraphConnector(
-        credential,
-        subscription_ids
+    ####################################################################
+    # Virtual Machine Inventory
+    ####################################################################
+
+    resource_graph_connector = (
+        ResourceGraphConnector(
+            credential,
+            subscription_ids,
+        )
     )
 
     virtual_machines = (
@@ -75,13 +120,50 @@ def main():
         style="green"
     )
 
-    console.print()
-
-    for vm in virtual_machines:
+    if not virtual_machines:
 
         console.print(
-            f"{vm.name:30} {vm.vm_size:25} {vm.location}"
+            "[yellow]No Azure Virtual Machines found.[/yellow]"
         )
+
+        return
+
+    ####################################################################
+    # Metrics Collection
+    ####################################################################
+
+    metrics_connector = (
+        VirtualMachineMetricsConnector(
+            credential,
+            config["observation_window"],
+        )
+    )
+
+    ####################################################################
+    # Presentation
+    ####################################################################
+
+    renderer = ConsoleRenderer()
+
+    renderer.render_virtual_machines(
+        virtual_machines
+    )
+
+    ####################################################################
+    # MVP
+    #
+    # Process the first VM only.
+    ####################################################################
+
+    metrics = (
+        metrics_connector.get_virtual_machine_metrics(
+            virtual_machines[0]
+        )
+    )
+
+    renderer.render_vm_metrics(
+        metrics
+    )
 
 
 if __name__ == "__main__":
