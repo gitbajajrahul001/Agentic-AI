@@ -18,6 +18,10 @@ from app.recommendation.recommendation_confidence import (
     RecommendationConfidence,
 )
 
+from app.models.recommendation_reason import (
+    RecommendationReason,
+)
+
 
 class RecommendationEngine:
     """
@@ -35,6 +39,28 @@ class RecommendationEngine:
     ####################################################################
     # Public API
     ####################################################################
+
+####################################################################
+# Helpers
+####################################################################
+
+    def _add_reason(
+        self,
+        analysis: VirtualMachineAnalysis,
+        category: str,
+     message: str,
+    ):
+
+     analysis.reasons.append(
+
+        RecommendationReason(
+
+            category=category,
+
+            message=message,
+        )
+    )
+
 
     def analyze(
         self,
@@ -70,8 +96,10 @@ class RecommendationEngine:
                 RecommendationConfidence.LOW
             )
 
-            analysis.observations.append(
-                "Insufficient telemetry to produce a reliable recommendation."
+            self._add_reason(
+                analysis,
+                "Insufficient telemetry",
+                "...",
             )
 
             return analysis
@@ -102,9 +130,19 @@ class RecommendationEngine:
                 RecommendationConfidence.HIGH
             )
 
-            analysis.observations.append(
-                f"Average CPU utilization ({metrics.cpu_average_percent:.2f}%) exceeds the configured threshold."
+            self._add_reason(
+
+                analysis,
+                "CPU",
+
+                (
+                    f"Average CPU utilization "
+                    f"({metrics.cpu_average_percent:.2f}%) "
+                    f"exceeds the configured upsize "
+                    f"threshold ({cpu_upsize_threshold}%)."
+                ),
             )
+            
 
             return analysis
 
@@ -134,8 +172,18 @@ class RecommendationEngine:
                 RecommendationConfidence.HIGH
             )
 
-            analysis.observations.append(
-                f"Average memory utilization ({metrics.memory_average_percent:.2f}%) exceeds the configured threshold."
+            self._add_reason(
+
+                analysis,
+
+                "Memory",
+
+                (
+                    f"Average memory utilization "
+                    f"({metrics.memory_average_percent:.2f}%) "
+                    f"exceeds the configured upsize "
+                    f"threshold ({memory_upsize_threshold}%)."
+                ),
             )
 
             return analysis
@@ -177,10 +225,41 @@ class RecommendationEngine:
                 RecommendationConfidence.HIGH
             )
 
-            analysis.observations.append(
-                "CPU and Memory utilization are below the configured thresholds."
+            self._add_reason(
+
+                analysis,
+
+                "CPU",
+
+                (
+                    f"Average CPU utilization "
+                    f"({metrics.cpu_average_percent:.2f}%) "
+                    f"is below the configured downsize "
+                    f"threshold ({cpu_downsize_threshold}%)."
+                ),
+            )
+            self._add_reason(
+
+                analysis,
+
+                "Memory",
+
+                (
+                    f"Average memory utilization "
+                    f"({metrics.memory_average_percent:.2f}%) "
+                    f"is below the configured downsize "
+                    f"threshold ({memory_downsize_threshold}%)."
+                ),
             )
 
+            self._add_reason(
+
+                analysis,
+
+                "Recommendation",
+
+                "The virtual machine qualifies for downsizing.",
+            )
             return analysis
 
         #
@@ -196,8 +275,45 @@ class RecommendationEngine:
             RecommendationConfidence.MEDIUM
         )
 
-        analysis.observations.append(
-            "Current utilization is within configured operating thresholds."
+        self._add_reason(
+
+            analysis,
+
+            "CPU",
+
+            (
+                f"Average CPU utilization "
+                f"({metrics.cpu_average_percent:.2f}%) "
+                f"is below the configured upsize "
+                f"threshold ({cpu_upsize_threshold}%) "
+                f"and above the configured downsize "
+                f"threshold ({cpu_downsize_threshold}%)."
+            ),
+        )
+
+        self._add_reason(
+
+            analysis,
+
+            "Memory",
+
+            (
+                f"Average memory utilization "
+                f"({metrics.memory_average_percent:.2f}%) "
+                f"is below the configured upsize "
+                f"threshold ({memory_upsize_threshold}%) "
+                f"and above the configured downsize "
+                f"threshold ({memory_downsize_threshold}%)."
+            ),
+        )
+
+        self._add_reason(
+
+            analysis,
+
+            "Recommendation",
+
+            "The current VM size remains appropriate based on the configured policy.",
         )
 
         return analysis
