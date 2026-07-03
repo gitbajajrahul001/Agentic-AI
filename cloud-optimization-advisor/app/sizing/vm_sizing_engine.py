@@ -77,7 +77,7 @@ class VmSizingEngine:
                     index - 1
                 ]
 
-            return self.supported_skus
+            return self.supported_skus[index]
 
         #
         # Keep

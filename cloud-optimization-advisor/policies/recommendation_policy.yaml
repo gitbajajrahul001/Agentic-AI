@@ -39,13 +39,13 @@ decision:
     # Recommend increasing VM capacity when the
     # average CPU utilization exceeds this value.
     #
-    upsize_threshold: 80
+    upsize_threshold: 15
 
     #
     # CPU must remain below this value before a
     # downsize can be considered.
     #
-    downsize_threshold: 20
+    downsize_threshold: 5
 
   memory:
 
@@ -53,13 +53,13 @@ decision:
     # Recommend increasing VM capacity when the
     # average memory utilization exceeds this value.
     #
-    upsize_threshold: 80
+    upsize_threshold: 97
 
     #
     # Memory must remain below this value before a
     # downsize can be considered.
     #
-    downsize_threshold: 40
+    downsize_threshold: 95
 
 ####################################################################
 # Confidence Levels

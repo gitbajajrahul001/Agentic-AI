@@ -6,7 +6,7 @@ class AzureStorageProfile(BaseModel):
     Current storage configuration attached to the VM.
     """
 
-    os_disk_type: str | None = None
+    os_disk_type: str = ""
 
     os_disk_size_gb: int = 0
 

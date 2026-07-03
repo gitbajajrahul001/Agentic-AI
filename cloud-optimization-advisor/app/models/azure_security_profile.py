@@ -3,11 +3,7 @@ from pydantic import BaseModel
 
 class AzureSecurityProfile(BaseModel):
     """
-    Current security configuration.
+    Current VM security configuration.
     """
 
-    trusted_launch: bool = False
-
-    confidential_vm: bool = False
-
-    encryption_at_host: bool = False
+    security_type: str = ""

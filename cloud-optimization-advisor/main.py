@@ -237,6 +237,9 @@ def main():
     virtual_machines = (
         resource_graph_connector.get_virtual_machines()
     )
+    #print(virtual_machines[0].storage_profile)
+    #print(virtual_machines[0].network_profile)
+    #print(virtual_machines[0].security_profile)
     console.print(
         f"✓ Found {len(virtual_machines)} virtual machine(s).",
         style="green"
