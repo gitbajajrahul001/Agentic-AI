@@ -1,0 +1,7 @@
+vm_sizes:
+
+  - Standard_B1s
+  - Standard_B2s
+  - Standard_B2ms
+  - Standard_B4ms
+  - Standard_B8ms
