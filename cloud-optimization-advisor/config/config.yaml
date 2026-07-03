@@ -1,10 +1,10 @@
 azure:
 
-  tenant_id: ""
+  tenant_id: "a1fc66b2-0613-42f5-a738-1f1e8a62bce0"
 
-  client_id: ""
+  client_id: "9be84fbf-92ab-4b3b-a039-9f85751a4762"
 
-  client_secret: ""
+  client_secret: "w398Q~TSs~HEdE1IoX1Bddu_SH-sDZs6Y.pOwcmO"
 
 log_analytics:
   workspace_id: "d1090953-acb4-45bf-957c-1acd70e9d5a4"

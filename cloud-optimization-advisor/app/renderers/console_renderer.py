@@ -9,6 +9,10 @@ from app.models.azure_virtual_machine_metrics import (
     AzureVirtualMachineMetrics,
 )
 
+from app.models.vm_optimization_report import (
+    VMOptimizationReport,
+)
+
 
 class ConsoleRenderer:
     """
@@ -175,7 +179,7 @@ class ConsoleRenderer:
                 analysis.recommended_vm_size
             )
 
-        self.console.print(table)
+        #self.console.print(table)
 
         observations = Table(
             title="Observations"
@@ -195,3 +199,168 @@ class ConsoleRenderer:
         self.console.print(
             observations
         )    
+    ####################################################################
+    # Optimization Dashboard
+    ####################################################################
+
+    def render_dashboard(
+        self,
+        reports: list[VMOptimizationReport],
+    ) -> None:
+
+        table = Table(
+            title="Cloud Optimization Advisor"
+        )
+
+        table.add_column(
+            "VM",
+            style="cyan",
+        )
+        table.add_column(
+            "Region",
+        )        
+
+        table.add_column(
+            "Current Size",
+        )
+
+        table.add_column(
+            "CPU Avg %",
+            justify="right",
+        )
+
+        table.add_column(
+            "Memory Avg %",
+            justify="right",
+        )
+
+        table.add_column(
+            "Recommendation",
+        )
+
+        table.add_column(
+            "Confidence",
+        )
+
+        table.add_column(
+            "Recommended Size",
+        )
+
+        for report in reports:
+
+            recommended_size = (
+                report.analysis.recommended_vm_size
+                or "N/A"
+            )
+
+            recommendation_value = (
+                report.analysis.recommendation.value
+            )
+
+            recommendation = (
+                recommendation_value
+                .replace("_", " ")
+                .title()
+            )
+
+            if recommendation_value == "UPSIZE":
+                recommendation = f"[yellow]{recommendation}[/yellow]"
+
+            elif recommendation_value == "DOWNSIZE":
+                recommendation = f"[green]{recommendation}[/green]"
+
+            elif recommendation_value == "KEEP_CURRENT_SIZE":
+                recommendation = f"[cyan]{recommendation}[/cyan]"
+
+            else:
+                recommendation = f"[red]{recommendation}[/red]"
+
+            confidence = (
+                report.analysis.confidence.value
+                .replace("_", " ")
+                .title()
+            )
+
+            table.add_row(
+                report.virtual_machine.name,
+                report.virtual_machine.location,
+                report.virtual_machine.vm_size,
+                f"{report.metrics.cpu_average_percent:.2f}%",
+                f"{report.metrics.memory_average_percent:.2f}%",
+                recommendation,
+                confidence,
+                recommended_size,
+            )
+        self.console.print(table)
+
+####################################################################
+# Optimization Summary
+####################################################################
+
+    def render_summary(
+        self,
+        reports: list[VMOptimizationReport],
+    ) -> None:
+
+        upsize = 0
+        downsize = 0
+        keep = 0
+        insufficient = 0
+
+        for report in reports:
+
+            action = report.analysis.recommendation.value
+
+            if action == "UPSIZE":
+                upsize += 1
+
+            elif action == "DOWNSIZE":
+                downsize += 1
+
+            elif action == "KEEP_CURRENT_SIZE":
+                keep += 1
+
+            else:
+                insufficient += 1
+
+        table = Table(
+            title="Cloud Optimization Summary"
+        )
+
+        table.add_column(
+            "Metric",
+            style="cyan",
+        )
+
+        table.add_column(
+            "Value",
+            justify="right",
+        )
+
+        table.add_row(
+            "Virtual Machines",
+            str(len(reports)),
+        )
+
+        table.add_row(
+            "Upsize",
+            str(upsize),
+        )
+
+        table.add_row(
+            "Downsize",
+            str(downsize),
+        )
+
+        table.add_row(
+            "Keep Current Size",
+            str(keep),
+        )
+
+        table.add_row(
+            "Insufficient Data",
+            str(insufficient),
+        )
+
+        self.console.print(table)
+    

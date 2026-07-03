@@ -1,3 +1,5 @@
+from dataclasses import field
+
 from pydantic import BaseModel, Field
 
 from app.recommendation.recommendation_action import (
@@ -29,3 +31,5 @@ class VirtualMachineAnalysis(BaseModel):
     current_vm_size: str = ""
 
     recommended_vm_size: str = ""
+
+    validation_results: list = field(default_factory=list)

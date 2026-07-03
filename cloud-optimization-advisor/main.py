@@ -20,6 +20,10 @@ from app.recommendation.recommendation_engine import (
     RecommendationEngine,
 )
 
+from app.models.vm_optimization_report import (
+    VMOptimizationReport,
+)
+
 console = Console()
 
 def main():
@@ -121,9 +125,9 @@ def main():
     # Presentation
     ####################################################################
     renderer = ConsoleRenderer()
-    renderer.render_virtual_machines(
-        virtual_machines
-    )
+    #renderer.render_virtual_machines(
+     #   virtual_machines
+    #)
     
     ####################################################################
     # Recommendation Engine
@@ -137,18 +141,18 @@ def main():
     #
     # Process the first VM only.
     ####################################################################
-    vm = virtual_machines[0]
-    metrics = metrics_connector.get_virtual_machine_metrics(
-        vm
-    )    
-    renderer.render_vm_metrics(
-        metrics
-    )
-    
-    analysis = recommendation_engine.analyze(
-        vm,
-        metrics,
-    )
+    #vm = virtual_machines[0]
+    #metrics = metrics_connector.get_virtual_machine_metrics(
+     #   vm
+    #)    
+    #renderer.render_vm_metrics(
+     #   metrics
+    #)
+    #
+    #analysis = recommendation_engine.analyze(
+    #    vm,
+    #    metrics,
+    #)
     
     #print()
     #print("Recommendation")
@@ -164,8 +168,45 @@ def main():
     #for observation in analysis.observations:
         #print(f"- {observation}")
     
-    renderer.render_vm_analysis(
-    analysis
-)
+    #renderer.render_vm_analysis(
+    #analysis
+#)
+####################################################################
+# Optimization Reports
+####################################################################
+
+    reports = []
+
+    for vm in virtual_machines:
+
+        metrics = (
+            metrics_connector.get_virtual_machine_metrics(
+                vm
+            )
+        )
+
+        analysis = (
+            recommendation_engine.analyze(
+                vm,
+                metrics,
+            )
+        )
+
+        reports.append(
+            VMOptimizationReport(
+                virtual_machine=vm,
+                metrics=metrics,
+                analysis=analysis,
+            )
+        )
+    
+
+    renderer.render_summary(
+        reports
+    )
+
+    renderer.render_dashboard(
+        reports
+    )
 if __name__ == "__main__":
     main()
