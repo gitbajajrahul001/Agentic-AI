@@ -1,8 +1,8 @@
 import pprint
 
 from rich.console import Console
-from app.core.config_loader import ConfigLoader
-from app.core.policy_loader import PolicyLoader
+from app.config.configuration_loader import ConfigurationLoader
+from app.config.policy_loader import PolicyLoader
 from app.connectors.azure.authentication_connector import (
     AzureAuthenticationConnector,
 )
@@ -61,7 +61,7 @@ def main():
     ####################################################################
     # Configuration
     ####################################################################
-    config = ConfigLoader.load()
+    config = ConfigurationLoader.load()
     console.print(
         "✓ Configuration loaded successfully.",
         style="green"

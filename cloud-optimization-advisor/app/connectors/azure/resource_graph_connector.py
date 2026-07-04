@@ -105,19 +105,19 @@ Resources
 
                     storage_profile=AzureStorageProfile(
 
-                        os_disk_type=row.get(
-                            "osDiskType",
-                            "",
+                        os_disk_type=(
+                            row.get("osDiskType")
+                            or ""
                         ),
 
-                        os_disk_size_gb=row.get(
-                            "osDiskSizeGB",
-                            0,
+                        os_disk_size_gb=(
+                            row.get("osDiskSizeGB")
+                                or 0
                         ),
 
-                        data_disk_count=row.get(
-                            "dataDiskCount",
-                            0,
+                        data_disk_count=(
+                            row.get("dataDiskCount")
+                            or 0
                         ),
 
                         has_premium_ssd=(
@@ -133,9 +133,9 @@ Resources
 
                     network_profile=AzureNetworkProfile(
 
-                        nic_count=row.get(
-                            "nicCount",
-                            0,
+                        nic_count=(
+                            row.get("nicCount")
+                            or 0
                         ),
 
                         #
