@@ -1,4 +1,9 @@
 import pprint
+import warnings
+
+warnings.simplefilter("error", UserWarning)
+
+warnings.filterwarnings("error")
 
 from rich.console import Console
 from app.config.configuration_loader import ConfigurationLoader
@@ -113,32 +118,6 @@ def main():
         f"✓ Found {len(subscription_ids)} subscription(s).",
         style="green"
     )
-    
-    ####################################################################
-    # Azure VM SKUs
-    ####################################################################
-
-    #sku_connector = VmSkuConnector(
-     #   credential,
-      #  subscription_ids[0],
-    #)
-
-    #vm_skus = sku_connector.get_vm_skus()
-
-    #from pprint import pprint
-
-    #print(type(vm_skus[0]))
-    #print("=" * 80)
-
-    #pprint(vm_skus[0].as_dict())
-
-    #return
-
-    #console.print(
-     #   f"✓ Retrieved {len(vm_skus)} Azure VM SKUs.",
-      #  style="green"
-    #)
-
 
     ####################################################################
     # Supported VM Sizes
@@ -185,7 +164,6 @@ def main():
     )
 
 
-
     ####################################################################
     # VM Sizing Engine
     ####################################################################
@@ -199,35 +177,6 @@ def main():
         ValidationEngine()
     )
 
-
-
-
-
-
-
-
-
-
-
-
-
-    # --------------------------------------------------------
-    # TEMPORARY DEBUG
-    # --------------------------------------------------------
-
-    #print(vm_skus[0])
-
-    #print(vm_skus[0].capability_int("vCPUs"))
-    #print(vm_skus[0].capability_int("MemoryGB"))
-    #print(vm_skus[0].capability_bool("PremiumIO"))
-    #print(vm_skus[0].capability_int("MaxDataDiskCount"))
-
-    #return
-
-    # --------------------------------------------------------
-    # END DEBUG
-    # --------------------------------------------------------
-
     ####################################################################
     # Virtual Machine Inventory
     ####################################################################
@@ -240,9 +189,6 @@ def main():
     virtual_machines = (
         resource_graph_connector.get_virtual_machines()
     )
-    #print(virtual_machines[0].storage_profile)
-    #print(virtual_machines[0].network_profile)
-    #print(virtual_machines[0].security_profile)
     console.print(
         f"✓ Found {len(virtual_machines)} virtual machine(s).",
         style="green"
@@ -269,9 +215,6 @@ def main():
     # Presentation
     ####################################################################
     renderer = ConsoleRenderer()
-    #renderer.render_virtual_machines(
-     #   virtual_machines
-    #)
     
     ####################################################################
     # Recommendation Engine
@@ -280,46 +223,12 @@ def main():
         recommendation_policy
     )
     
-    ####################################################################
-    # MVP
-    #
-    # Process the first VM only.
-    ####################################################################
-    #vm = virtual_machines[0]
-    #metrics = metrics_connector.get_virtual_machine_metrics(
-     #   vm
-    #)    
-    #renderer.render_vm_metrics(
-     #   metrics
-    #)
-    #
-    #analysis = recommendation_engine.analyze(
-    #    vm,
-    #    metrics,
-    #)
-    
-    #print()
-    #print("Recommendation")
-    #print("----------------")
-    #print(analysis.recommendation)
-    #print()
-    #print("Confidence")
-    #print("----------")
-    #print(analysis.confidence)
-    #print()
-    #print("Observations")
-    #print("------------")
-    #for observation in analysis.observations:
-        #print(f"- {observation}")
-    
-    #renderer.render_vm_analysis(
-    #analysis
-#)
 ####################################################################
 # Optimization Reports
 ####################################################################
 
     reports = []
+    
 
     for vm in virtual_machines:
 
@@ -350,13 +259,15 @@ def main():
             analysis.recommendation,
             )
         )
-
         #
         # Default to the current VM size.
+        # If every candidate fails validation,
+        # we will keep the existing VM.
         #
         analysis.recommended_vm_size = (
             vm.vm_size
         )
+        
 
         for candidate in candidates:
 
@@ -371,21 +282,17 @@ def main():
 
                 validation_summary=summary,
             )
-            print()
 
-            print(candidate.name)
-
-            for result in summary.results:
-
-                print(result)
+            #
+            # Store the validation result for this candidate.
+            #
+            evaluation.passed_validation = summary.passed
 
             analysis.candidate_evaluations.append(
                 evaluation
             )
 
             if summary.passed:
-
-                evaluation.selected = True
 
                 analysis.recommended_vm_size = (
                     candidate.name
@@ -399,6 +306,10 @@ def main():
 
     renderer.render_dashboard(
         reports
+    )
+    
+    renderer.render_detailed_report(
+    reports
     )
     
 

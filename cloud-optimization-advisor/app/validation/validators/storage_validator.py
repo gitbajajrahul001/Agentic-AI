@@ -11,6 +11,9 @@ from app.models.validation_result import (
 )
 
 
+
+
+
 class StorageValidator:
     """
     Validates storage compatibility between
@@ -18,6 +21,12 @@ class StorageValidator:
     """
 
     DOMAIN = "Storage"
+
+    RULE_MAX_DATA_DISKS = "Maximum Data Disks"
+
+    RULE_PREMIUM_STORAGE = "Premium Storage"
+
+    RULE_ULTRA_SSD = "Ultra SSD"
 
     ####################################################################
     # Public API
@@ -29,23 +38,45 @@ class StorageValidator:
         candidate: AzureVmSku,
     ) -> list[ValidationResult]:
 
-        results = []
+        return [
 
-        results.append(
             self._validate_max_data_disks(
                 vm,
                 candidate,
-            )
-        )
+            ),
 
-        results.append(
             self._validate_premium_storage(
                 vm,
                 candidate,
-            )
-        )
+            ),
 
-        return results
+            self._validate_ultra_ssd(
+                vm,
+                candidate,
+            ),
+
+        ]    
+    
+    def _result(
+        self,
+        rule: str,
+        passed: bool,
+        blocker: bool,
+        message: str,
+    ) -> ValidationResult:
+
+        return ValidationResult(
+
+            domain=self.DOMAIN,
+
+            rule=rule,
+
+            passed=passed,
+
+            blocker=blocker,
+
+            message=message,
+        )
 
     ####################################################################
     # Validation Rules
@@ -61,11 +92,8 @@ class StorageValidator:
             vm.storage_profile.data_disk_count
         )
 
-        candidate_max = int(
-            candidate.capabilities.get(
-                "MaxDataDiskCount",
-                0,
-            )
+        candidate_max = candidate.capability_int(
+            "MaxDataDiskCount"
         )
 
         passed = (
@@ -74,11 +102,9 @@ class StorageValidator:
 
         if passed:
 
-            return ValidationResult(
+            return self._result(
 
-                domain=self.DOMAIN,
-
-                rule="Maximum Data Disks",
+                rule=self.RULE_MAX_DATA_DISKS,
 
                 passed=True,
 
@@ -90,11 +116,9 @@ class StorageValidator:
                 ),
             )
 
-        return ValidationResult(
+        return self._result(
 
-            domain=self.DOMAIN,
-
-            rule="Maximum Data Disks",
+            rule=self.RULE_MAX_DATA_DISKS,
 
             passed=False,
 
@@ -115,16 +139,14 @@ class StorageValidator:
     ) -> ValidationResult:
 
         #
-        # VM doesn't require Premium SSD.
+        # Current VM does not require Premium SSD.
         #
 
         if not vm.storage_profile.has_premium_ssd:
 
-            return ValidationResult(
+            return self._result(
 
-                domain=self.DOMAIN,
-
-                rule="Premium Storage",
+                rule=self.RULE_PREMIUM_STORAGE,
 
                 passed=True,
 
@@ -141,11 +163,9 @@ class StorageValidator:
 
         if passed:
 
-            return ValidationResult(
+            return self._result(
 
-                domain=self.DOMAIN,
-
-                rule="Premium Storage",
+                rule=self.RULE_PREMIUM_STORAGE,
 
                 passed=True,
 
@@ -156,11 +176,9 @@ class StorageValidator:
                 ),
             )
 
-        return ValidationResult(
+        return self._result(
 
-            domain=self.DOMAIN,
-
-            rule="Premium Storage",
+            rule=self.RULE_PREMIUM_STORAGE,
 
             passed=False,
 
@@ -170,3 +188,59 @@ class StorageValidator:
                 "Candidate does not support Premium SSD."
             ),
         )
+    def _validate_ultra_ssd(
+        self,
+        vm: AzureVirtualMachine,
+        candidate: AzureVmSku,
+    ) -> ValidationResult:
+
+        #
+        # Current VM does not require Ultra SSD.
+        #
+
+        if not vm.storage_profile.has_ultra_ssd:
+
+            return self._result(
+
+                rule=self.RULE_ULTRA_SSD,
+
+                passed=True,
+
+                blocker=False,
+
+                message=(
+                    "Current VM does not require Ultra SSD."
+                ),
+            )
+
+        passed = candidate.capability_bool(
+            "UltraSSDAvailable"
+        )
+
+        if passed:
+
+            return self._result(
+
+                rule=self.RULE_ULTRA_SSD,
+
+                passed=True,
+
+                blocker=False,
+
+                message=(
+                    "Candidate supports Ultra SSD."
+                ),
+            )
+
+        return self._result(
+
+            rule=self.RULE_ULTRA_SSD,
+
+            passed=False,
+
+            blocker=True,
+
+            message=(
+                "Candidate does not support Ultra SSD."
+            ),
+        )  

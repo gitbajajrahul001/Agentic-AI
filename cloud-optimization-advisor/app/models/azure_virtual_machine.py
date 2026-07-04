@@ -22,14 +22,10 @@ class AzureVirtualMachine(BaseModel):
 
     id: str
     name: str
-
     subscription_id: str
     resource_group: str
-
     location: str
-
     vm_size: str
-
     operating_system: Optional[str] = None
     power_state: Optional[str] = None
 

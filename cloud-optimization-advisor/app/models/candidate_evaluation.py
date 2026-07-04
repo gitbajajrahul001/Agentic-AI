@@ -14,4 +14,4 @@ class CandidateEvaluation(BaseModel):
 
     validation_summary: ValidationSummary
 
-    selected: bool = False
+    passed_validation: bool = False

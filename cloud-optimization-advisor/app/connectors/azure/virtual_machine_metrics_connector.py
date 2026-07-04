@@ -1,4 +1,8 @@
-from datetime import datetime, timedelta
+from datetime import (
+    datetime,
+    timedelta,
+    timezone,
+)
 
 from azure.monitor.query import (
     LogsQueryClient,
@@ -205,7 +209,9 @@ class VirtualMachineMetricsConnector(BaseAzureConnector):
         Retrieves hourly metric samples from Azure Monitor.
         """
 
-        observation_end = datetime.utcnow()
+        observation_end = datetime.now(
+        timezone.utc
+)
 
         observation_start = (
             observation_end -
@@ -220,9 +226,10 @@ class VirtualMachineMetricsConnector(BaseAzureConnector):
         params = {
             "api-version": AzureApiVersions.METRICS,
             "metricnames": metric_name,
-            "timespan":
-                f"{observation_start.isoformat()}Z/"
-                f"{observation_end.isoformat()}Z",
+            "timespan": (
+            f"{observation_start.strftime('%Y-%m-%dT%H:%M:%SZ')}/"
+            f"{observation_end.strftime('%Y-%m-%dT%H:%M:%SZ')}"
+            ),
             "interval": "PT1H",
             "aggregation": "Average",
         }
@@ -271,7 +278,9 @@ Perf
 | order by TimeGenerated asc
 """
 
-        observation_end = datetime.utcnow()
+        observation_end = datetime.now(
+            timezone.utc
+        )
 
         observation_start = (
             observation_end -

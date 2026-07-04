@@ -14,6 +14,8 @@ from app.models.vm_optimization_report import (
 )
 
 
+
+
 class ConsoleRenderer:
     """
     Responsible for rendering application output
@@ -363,4 +365,142 @@ class ConsoleRenderer:
         )
 
         self.console.print(table)
-    
+####################################################################
+# Detailed Report
+####################################################################
+
+    def render_detailed_report(
+        self,
+        reports: list[VMOptimizationReport],
+    ) -> None:
+
+        self.console.rule(
+            "[bold cyan]Detailed Recommendation Report[/bold cyan]"
+        )
+
+        for report in reports:
+
+            self.console.print()
+
+            #
+            # VM
+            #
+
+            self.console.print()
+
+            self.console.print(
+                "[bold cyan]Resource Details[/bold cyan]"
+            )
+
+            self.console.print(
+                f"    [bold]VM Hostname:[/bold] "
+                f"{report.virtual_machine.name}"
+            )
+
+            self.console.print(
+                f"    [bold]Subscription ID:[/bold] "
+                f"{report.virtual_machine.subscription_id}"
+            )
+
+            self.console.print(
+                f"    [bold]Resource Group:[/bold] "
+                f"{report.virtual_machine.resource_group}"
+            )
+
+            self.console.print(
+                f"    [bold]Azure Region:[/bold] "
+                f"{report.virtual_machine.location}"
+            )
+
+            self.console.print(
+                f"    [bold]Current VM SKU:[/bold] "
+                f"{report.virtual_machine.vm_size}"
+            )
+
+            self.console.print()
+            
+            
+            self.console.print(
+                "[bold cyan]Pre-Evaluation Recommendation[/bold cyan]"
+            )
+
+            self.console.print(
+                f"    {report.analysis.recommendation.value.replace('_', ' ').title()}"
+            )
+
+            self.console.print()
+
+            #
+            # Candidate Evaluations
+            #
+            
+            self.console.print(
+                "[bold cyan]Evaluation Results[/bold cyan]"
+            )
+
+            for evaluation in report.analysis.candidate_evaluations:
+
+                self.console.print(
+                    f"    [bold green]Candidate VM SKU:[/bold green] "
+                    f"{evaluation.candidate_vm_size}"
+                )
+
+                for result in evaluation.validation_summary.results:
+
+                    icon = (
+                        "[green]✓[/green]"
+                        if result.passed
+                        else "[red]✗[/red]"
+                    )
+
+                    self.console.print(
+                        f"        {icon} "
+                        f"[bold]{result.rule}:[/bold] "
+                        f"{result.message}"
+                    )
+
+            #
+            # Final Recommendation
+            #
+
+            post_recommendation = (
+                report.analysis.recommendation.value
+                .replace("_", " ")
+                .title()
+            )
+
+            if (
+                report.analysis.recommended_vm_size
+                ==
+                report.virtual_machine.vm_size
+            ):
+                post_recommendation = "Keep Current Size"
+            else:
+                post_recommendation = (
+                    report.analysis.recommendation.value
+                    .replace("_", " ")
+                    .title()
+                )
+
+            self.console.print()
+
+            self.console.print(
+                "[bold cyan]Post-Evaluation Recommendation[/bold cyan]"
+            )
+                        
+            self.console.print(
+                f"    {post_recommendation}"
+            )
+            self.console.print()
+            
+            self.console.print(
+                "[bold cyan]Recommended Target SKU[/bold cyan]"
+            )
+
+            self.console.print(
+                f"    {report.analysis.recommended_vm_size}"
+            )
+
+            self.console.rule()
+            
+            
