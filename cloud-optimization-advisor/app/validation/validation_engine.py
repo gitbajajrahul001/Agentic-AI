@@ -6,15 +6,48 @@ from app.models.azure_vm_sku import (
     AzureVmSku,
 )
 
+from app.models.validation_summary import (
+    ValidationSummary,
+)
+
+from app.validation.validators.storage_validator import (
+    StorageValidator,
+)
+
+# Future
+#
+# from app.validation.validators.network_validator import (
+#     NetworkValidator,
+# )
+#
+# from app.validation.validators.security_validator import (
+#     SecurityValidator,
+# )
+#
+# from app.validation.validators.compute_validator import (
+#     ComputeValidator,
+# )
+
 
 class ValidationEngine:
     """
-    Validates whether a candidate VM SKU is
-    compatible with the current virtual machine.
-
-    Each validation rule is implemented as an
-    independent method.
+    Executes all validation domains and
+    aggregates the results.
     """
+
+    def __init__(self):
+
+        self.validators = [
+
+            StorageValidator(),
+
+            #
+            # Future validators
+            #
+            # NetworkValidator(),
+            # SecurityValidator(),
+            # ComputeValidator(),
+        ]
 
     ####################################################################
     # Public API
@@ -24,39 +57,29 @@ class ValidationEngine:
         self,
         vm: AzureVirtualMachine,
         candidate: AzureVmSku,
-    ) -> bool:
+    ) -> ValidationSummary:
 
-        if not self._validate_premium_ssd(
-            vm,
-            candidate,
-        ):
-            return False
+        summary = ValidationSummary()
 
-        return True
+        for validator in self.validators:
 
-    ####################################################################
-    # Validation Rules
-    ####################################################################
+            results = validator.validate(
+                vm,
+                candidate,
+            )
 
-    def _validate_premium_ssd(
-        self,
-        vm: AzureVirtualMachine,
-        candidate: AzureVmSku,
-    ) -> bool:
-        """
-        If the current VM uses Premium SSD,
-        the candidate SKU must support Premium IO.
-        """
+            summary.results.extend(
+                results
+            )
 
-        #
-        # VM is not using Premium SSD.
-        #
-        if not vm.storage_profile.has_premium_ssd:
-            return True
+        summary.passed = all(
 
-        #
-        # Candidate must support Premium IO.
-        #
-        return candidate.capability_bool(
-            "PremiumIO"
+            result.passed
+
+            for result in summary.results
+
+            if result.blocker
+
         )
+
+        return summary

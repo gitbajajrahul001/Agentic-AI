@@ -46,6 +46,9 @@ from app.validation.validation_engine import (
     ValidationEngine,
 )
 
+from app.models.candidate_evaluation import (
+    CandidateEvaluation,
+)
 
 console = Console()
 
@@ -332,32 +335,7 @@ def main():
                 metrics,
             )
         )
-        #analysis.recommended_vm_size = (
-            #vm_sizing_engine.recommend_size(
-             #   vm.vm_size,
-              #  analysis.recommendation,
-            #)
-        #)
-        candidate = (
-            vm_sizing_engine.recommend_size(
-                vm.vm_size,
-                analysis.recommendation,
-            )   
-        )
-        #print(type(candidate))
-        #print(candidate)
 
-        if (
-            candidate
-            and
-            validation_engine.validate(
-            vm,
-            candidate,
-            )
-        ):
-            analysis.recommended_vm_size = (
-                candidate.name
-        )
 
         reports.append(
             VMOptimizationReport(
@@ -366,7 +344,54 @@ def main():
                 analysis=analysis,
             )
         )
-    
+        candidates = (
+        vm_sizing_engine.get_candidates(
+            vm.vm_size,
+            analysis.recommendation,
+            )
+        )
+
+        #
+        # Default to the current VM size.
+        #
+        analysis.recommended_vm_size = (
+            vm.vm_size
+        )
+
+        for candidate in candidates:
+
+            summary = validation_engine.validate(
+                vm,
+                candidate,
+            )
+
+            evaluation = CandidateEvaluation(
+
+                candidate_vm_size=candidate.name,
+
+                validation_summary=summary,
+            )
+            print()
+
+            print(candidate.name)
+
+            for result in summary.results:
+
+                print(result)
+
+            analysis.candidate_evaluations.append(
+                evaluation
+            )
+
+            if summary.passed:
+
+                evaluation.selected = True
+
+                analysis.recommended_vm_size = (
+                    candidate.name
+                )
+
+                break
 
     renderer.render_summary(
         reports

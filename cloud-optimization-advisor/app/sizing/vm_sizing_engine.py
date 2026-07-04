@@ -9,12 +9,13 @@ from app.recommendation.recommendation_action import (
 
 class VmSizingEngine:
     """
-    Determines the recommended VM SKU based on
-    the recommendation action.
+    Generates an ordered list of candidate VM SKUs
+    based on the recommendation.
 
-    Version 1:
-    - Uses only the organization supported SKU order.
-    - No capability validation.
+    The sizing engine does NOT validate candidates.
+
+    Validation is performed separately by the
+    Validation Engine.
     """
 
     def __init__(
@@ -28,15 +29,11 @@ class VmSizingEngine:
     # Public API
     ####################################################################
 
-    def recommend_size(
+    def get_candidates(
         self,
         current_vm_size: str,
         recommendation: RecommendationAction,
-    ) -> AzureVmSku | None:
-
-        #
-        # Find current SKU index.
-        #
+    ) -> list[AzureVmSku]:
 
         sku_names = [
             sku.name
@@ -45,7 +42,7 @@ class VmSizingEngine:
 
         if current_vm_size not in sku_names:
 
-            return None
+            return []
 
         index = sku_names.index(
             current_vm_size
@@ -57,13 +54,9 @@ class VmSizingEngine:
 
         if recommendation == RecommendationAction.UPSIZE:
 
-            if index < len(sku_names) - 1:
-
-                return self.supported_skus[
-                    index + 1
-                ]
-
-            return self.supported_skus[index]
+            return self.supported_skus[
+                index + 1 :
+            ]
 
         #
         # Downsize
@@ -71,18 +64,18 @@ class VmSizingEngine:
 
         if recommendation == RecommendationAction.DOWNSIZE:
 
-            if index > 0:
-
-                return self.supported_skus[
-                    index - 1
-                ]
-
-            return self.supported_skus[index]
+            return list(
+                reversed(
+                    self.supported_skus[
+                        :index
+                    ]
+                )
+            )
 
         #
-        # Keep
+        # Keep Current Size
         #
 
-        return self.supported_skus[
-            index
+        return [
+            self.supported_skus[index]
         ]

@@ -12,6 +12,12 @@ from app.recommendation.recommendation_confidence import (
     RecommendationConfidence,
 )
 
+from app.models.validation_summary import (
+    ValidationSummary,
+)
+from app.models.candidate_evaluation import (
+    CandidateEvaluation,
+)
 
 class VirtualMachineAnalysis(BaseModel):
     """
@@ -56,9 +62,11 @@ class VirtualMachineAnalysis(BaseModel):
     )
 
     ####################################################################
-    # Validation
+    # Candidate Evaluation
     ####################################################################
 
-    validation_results: list = Field(
+    candidate_evaluations: list[
+        CandidateEvaluation
+    ] = Field(
         default_factory=list
     )
