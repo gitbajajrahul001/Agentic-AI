@@ -301,6 +301,12 @@ def main():
 
             analysis=analysis,
         )
+        
+        report.policy_version = recommendation_policy[
+            "policy"
+        ][
+            "version"
+        ]
 
         report.metadata = metadata_engine.extract_metadata(
             vm.tags,

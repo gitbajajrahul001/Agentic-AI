@@ -1,7 +1,12 @@
-from pydantic import Field
+from datetime import (
+    datetime,
+    timezone,
+)
 
-from pydantic import BaseModel, Field
-
+from pydantic import (
+    BaseModel,
+    Field,
+)
 from app.models.azure_virtual_machine import (
     AzureVirtualMachine,
 )
@@ -20,6 +25,7 @@ from app.models.cost_analysis import (
 
 
 
+
 class VMOptimizationReport(BaseModel):
     """
     Represents the complete optimization report
@@ -34,14 +40,18 @@ class VMOptimizationReport(BaseModel):
     metrics: AzureVirtualMachineMetrics
 
     analysis: VirtualMachineAnalysis
-    
+
     cost_analysis: CostAnalysis = Field(
-    default_factory=CostAnalysis    
-    
+        default_factory=CostAnalysis
     )
-       
+
     metadata: dict[str, str] = Field(
         default_factory=dict
     )
 
-
+    generated_at: datetime = Field(
+        default_factory=lambda: datetime.now(
+            timezone.utc,
+        )
+    )
+    policy_version: str = ""
