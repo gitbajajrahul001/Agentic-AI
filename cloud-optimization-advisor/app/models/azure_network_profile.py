@@ -6,6 +6,6 @@ class AzureNetworkProfile(BaseModel):
     Current network configuration.
     """
 
-    nic_count: int = 0
+    accelerated_networking_enabled: bool = False
 
-    accelerated_networking: bool = False
+    network_interface_count: int = 0

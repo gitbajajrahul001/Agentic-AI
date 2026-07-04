@@ -14,8 +14,8 @@ from app.models.azure_network_profile import (
     AzureNetworkProfile,
 )
 
-from app.models.azure_security_profile import (
-    AzureSecurityProfile,
+from app.models.azure_platform_profile import (
+    AzurePlatformProfile,
 )
 
 
@@ -72,7 +72,10 @@ Resources
     powerStateDisplay = tostring(properties.extended.instanceView.powerState.displayStatus),
     identityType = coalesce(tostring(identity.type), 'None'),
     availabilityZone = coalesce(tostring(zones[0]), 'None'),
-    tags
+    tags,
+    hyperVGeneration = tostring(properties.hardwareProfile.vmSizeProperties.vCPUsAvailable),
+    cpuArchitecture = tostring(properties.hardwareProfile.vmArchitecture),
+    ephemeralOsDisk = coalesce(tostring(properties.storageProfile.osDisk.diffDiskSettings.option), 'None')
 """
         }
 
@@ -133,26 +136,45 @@ Resources
 
                     network_profile=AzureNetworkProfile(
 
-                        nic_count=(
-                            row.get("nicCount")
-                            or 0
-                        ),
+                        #
+                        # TODO:
+                        # Retrieve from the attached Network Interface(s).
+                        # Resource Graph currently provides NIC count but
+                        # not Accelerated Networking.
+                        #
+                        accelerated_networking_enabled=False,
 
-                        #
-                        # Resource Graph does not expose
-                        # Accelerated Networking.
-                        #
-                        accelerated_networking=False,
+                        network_interface_count=row.get(
+                            "nicCount",
+                            0,
+                        ),
                     ),
 
-                    security_profile=AzureSecurityProfile(
+                    platform_profile=AzurePlatformProfile(
 
                         security_type=row.get(
                             "securityType",
                             "",
                         ),
+
+                        hyperv_generation=row.get(
+                            "hyperVGeneration",
+                            "",
+                        ),
+
+                        cpu_architecture=row.get(
+                            "cpuArchitecture",
+                            "",
+                        ),
+
+                        ephemeral_os_disk=(
+                            row.get(
+                                "ephemeralOsDisk",
+                                ""
+                            )
+                            == "Local"
+                        ),
                     ),
                 )
-            )
-
+            )   
         return virtual_machines

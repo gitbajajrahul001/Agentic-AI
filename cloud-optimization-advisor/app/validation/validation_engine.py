@@ -14,6 +14,14 @@ from app.validation.validators.storage_validator import (
     StorageValidator,
 )
 
+from app.validation.validators.network_validator import (
+    NetworkValidator,
+)
+
+from app.validation.validators.platform_validator import (
+    PlatformValidator,
+)
+
 # Future
 #
 # from app.validation.validators.network_validator import (
@@ -40,11 +48,11 @@ class ValidationEngine:
         self.validators = [
 
             StorageValidator(),
+            NetworkValidator(),
+            PlatformValidator(),
 
             #
             # Future validators
-            #
-            # NetworkValidator(),
             # SecurityValidator(),
             # ComputeValidator(),
         ]

@@ -48,18 +48,18 @@ class RecommendationEngine:
         self,
         analysis: VirtualMachineAnalysis,
         category: str,
-     message: str,
-    ):
+        message: str,
+    ) -> None:
 
-     analysis.reasons.append(
+        analysis.reasons.append(
 
-        RecommendationReason(
+            RecommendationReason(
 
-            category=category,
+                category=category,
 
-            message=message,
+                message=message,
+            )
         )
-    )
 
 
     def analyze(

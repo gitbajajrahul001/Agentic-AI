@@ -45,15 +45,6 @@ class VirtualMachineAnalysis(BaseModel):
     recommended_vm_size: str = ""
 
     ####################################################################
-    # Legacy observations
-    # (to be replaced by structured reasons)
-    ####################################################################
-
-    observations: list[str] = Field(
-        default_factory=list
-    )
-
-    ####################################################################
     # Explainability
     ####################################################################
 

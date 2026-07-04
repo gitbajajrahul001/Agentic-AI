@@ -10,8 +10,8 @@ from app.models.azure_network_profile import (
     AzureNetworkProfile,
 )
 
-from app.models.azure_security_profile import (
-    AzureSecurityProfile,
+from app.models.azure_platform_profile import (
+    AzurePlatformProfile,
 )
 
 
@@ -39,6 +39,6 @@ class AzureVirtualMachine(BaseModel):
         default_factory=AzureNetworkProfile
     )
 
-    security_profile: AzureSecurityProfile = Field(
-        default_factory=AzureSecurityProfile
-    )
+    platform_profile: AzurePlatformProfile = Field(
+        default_factory=AzurePlatformProfile
+)

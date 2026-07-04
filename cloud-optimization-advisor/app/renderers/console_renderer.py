@@ -429,6 +429,30 @@ class ConsoleRenderer:
             )
 
             self.console.print()
+            
+                        #
+            # Recommendation Rationale
+            #
+
+            if report.analysis.reasons:
+
+                self.console.print()
+
+                self.console.print(
+                    "[bold cyan]Recommendation Rationale[/bold cyan]"
+                )
+
+                for reason in report.analysis.reasons:
+
+                    self.console.print(
+                        f"    [bold]{reason.category}[/bold]"
+                    )
+
+                    self.console.print(
+                        f"        {reason.message}"
+                    )
+
+                    self.console.print()
 
             #
             # Candidate Evaluations
@@ -445,19 +469,40 @@ class ConsoleRenderer:
                     f"{evaluation.candidate_vm_size}"
                 )
 
+                grouped_results = {}
+
                 for result in evaluation.validation_summary.results:
 
-                    icon = (
-                        "[green]✓[/green]"
-                        if result.passed
-                        else "[red]✗[/red]"
+                    grouped_results.setdefault(
+                        result.domain,
+                        [],
+                    ).append(result)
+                    
+                for domain, results in grouped_results.items():
+
+                    self.console.print()
+
+                    self.console.print(
+                        f"[#FFB000]{domain}[/#FFB000]"
                     )
 
                     self.console.print(
-                        f"        {icon} "
-                        f"[bold]{result.rule}:[/bold] "
-                        f"{result.message}"
+                        "-" * len(domain)
                     )
+
+                    for result in results:
+
+                        icon = (
+                            "[green]✓[/green]"
+                            if result.passed
+                            else "[red]✗[/red]"
+                        )
+
+                        self.console.print(
+                            f"    {icon} "
+                            f"[bold]{result.rule}[/bold]: "
+                            f"{result.message}"
+                        )
 
             #
             # Final Recommendation
