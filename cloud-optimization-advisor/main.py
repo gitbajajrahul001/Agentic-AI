@@ -58,11 +58,9 @@ from app.models.candidate_evaluation import (
 from app.connectors.azure.pricing_connector import (
     PricingConnector,
 )
-
-pricing_connector = PricingConnector()
-
-HOURS_PER_MONTH = 730
-
+from app.metadata.metadata_engine import (
+    MetadataEngine,
+)
 
 console = Console()
 
@@ -74,7 +72,7 @@ def main():
     console.rule(
         "[bold blue]Cloud Optimization Advisor[/bold blue]"
     )
-    
+      
     ####################################################################
     # Configuration
     ####################################################################
@@ -94,6 +92,20 @@ def main():
         "✓ Recommendation policy loaded.",
         style="green"
     )
+    
+    ####################################################################
+    # Metadata Configuration
+    ####################################################################
+
+    metadata_configuration = ConfigurationLoader.load(
+        "metadata_configuration"
+    )
+
+    console.print(
+        "✓ Metadata configuration loaded.",
+        style="green",
+    )
+       
     
     ####################################################################
     # Authentication
@@ -231,6 +243,22 @@ def main():
     recommendation_engine = RecommendationEngine(
         recommendation_policy
     )
+    ####################################################################
+    # Pricing Engine
+    ####################################################################
+    pricing_connector = PricingConnector()
+    
+    HOURS_PER_MONTH = 730
+
+    ####################################################################
+    # Metadata Engine
+    ####################################################################
+    metadata_configuration = ConfigurationLoader.load(
+        "metadata_configuration"
+    )
+    metadata_engine = MetadataEngine(
+        metadata_configuration,
+    )
 
     ####################################################################
     # Optimization Reports
@@ -274,6 +302,10 @@ def main():
             analysis=analysis,
         )
 
+        report.metadata = metadata_engine.extract_metadata(
+            vm.tags,
+        )
+        
         ###############################################################
         # Default Recommendation
         ###############################################################

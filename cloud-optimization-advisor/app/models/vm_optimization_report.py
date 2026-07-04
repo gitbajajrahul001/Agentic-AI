@@ -1,3 +1,5 @@
+from pydantic import Field
+
 from pydantic import BaseModel, Field
 
 from app.models.azure_virtual_machine import (
@@ -34,5 +36,12 @@ class VMOptimizationReport(BaseModel):
     analysis: VirtualMachineAnalysis
     
     cost_analysis: CostAnalysis = Field(
-    default_factory=CostAnalysis
-)
+    default_factory=CostAnalysis    
+    
+    )
+       
+    metadata: dict[str, str] = Field(
+        default_factory=dict
+    )
+
+

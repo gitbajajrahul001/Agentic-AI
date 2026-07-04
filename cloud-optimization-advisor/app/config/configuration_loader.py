@@ -5,11 +5,14 @@ import yaml
 
 class ConfigurationLoader:
     """
-    Loads application configuration from config/config.yaml.
+    Loads application configuration files
+    from the config directory.
     """
 
     @staticmethod
-    def load() -> dict:
+    def load(
+        configuration_name: str = "config",
+    ) -> dict:
 
         project_root = (
             Path(__file__).resolve().parents[2]
@@ -18,7 +21,7 @@ class ConfigurationLoader:
         config_file = (
             project_root
             / "config"
-            / "config.yaml"
+            / f"{configuration_name}.yaml"
         )
 
         if not config_file.exists():

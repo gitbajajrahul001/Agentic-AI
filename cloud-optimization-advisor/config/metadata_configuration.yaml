@@ -1,0 +1,21 @@
+####################################################################
+# Resource Metadata
+####################################################################
+
+resource_metadata:
+
+  owner:
+    tag: owner
+    required: true
+
+  cost_center:
+    tag: cost_center
+    required: true
+
+  environment:
+    tag: environment
+    required: false
+
+  application:
+    tag: app_name 
+    required: false

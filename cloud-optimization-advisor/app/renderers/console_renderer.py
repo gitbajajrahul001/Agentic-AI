@@ -202,7 +202,7 @@ class ConsoleRenderer:
             observations
         )    
     ####################################################################
-    # Optimization Dashboard
+    # Optimization Recommendations
     ####################################################################
 
     def render_dashboard(
@@ -211,29 +211,19 @@ class ConsoleRenderer:
     ) -> None:
 
         table = Table(
-            title="Cloud Optimization Advisor"
+            title="Optimization Recommendations"
         )
 
         table.add_column(
             "VM",
-            style="cyan",
-        )
-        table.add_column(
-            "Region",
-        )        
-
-        table.add_column(
-            "Current Size",
         )
 
         table.add_column(
-            "CPU Avg %",
-            justify="right",
+            "Current SKU",
         )
 
         table.add_column(
-            "Memory Avg %",
-            justify="right",
+            "Target SKU",
         )
 
         table.add_column(
@@ -241,97 +231,86 @@ class ConsoleRenderer:
         )
 
         table.add_column(
-            "Confidence",
+            "Monthly Savings",
+            justify="right",
         )
 
         table.add_column(
-            "Recommended Size",
+            "Annual Savings",
+            justify="right",
         )
 
         for report in reports:
 
-            recommended_size = (
+            monthly_savings = (
+                f"${report.cost_analysis.monthly_savings:.2f}"
+            )
+
+            annual_savings = (
+                f"${report.cost_analysis.yearly_savings:.2f}"
+            )
+
+            if report.cost_analysis.monthly_savings > 0:
+
+                monthly_savings = (
+                    f"[green]{monthly_savings}[/green]"
+                )
+
+            if report.cost_analysis.yearly_savings > 0:
+
+                annual_savings = (
+                    f"[green]{annual_savings}[/green]"
+                )
+
+            if (
                 report.analysis.recommended_vm_size
-                or "N/A"
-            )
+                ==
+                report.virtual_machine.vm_size
+            ):
 
-            recommendation_value = (
-                report.analysis.recommendation.value
-            )
-
-            recommendation = (
-                recommendation_value
-                .replace("_", " ")
-                .title()
-            )
-
-            if recommendation_value == "UPSIZE":
-                recommendation = f"[yellow]{recommendation}[/yellow]"
-
-            elif recommendation_value == "DOWNSIZE":
-                recommendation = f"[green]{recommendation}[/green]"
-
-            elif recommendation_value == "KEEP_CURRENT_SIZE":
-                recommendation = f"[cyan]{recommendation}[/cyan]"
+                final_recommendation = (
+                    "Keep Current Size"
+                )
 
             else:
-                recommendation = f"[red]{recommendation}[/red]"
 
-            confidence = (
-                report.analysis.confidence.value
-                .replace("_", " ")
-                .title()
-            )
+                final_recommendation = (
+                    report.analysis.recommendation.value
+                    .replace("_", " ")
+                    .title()
+                )
 
             table.add_row(
+
                 report.virtual_machine.name,
-                report.virtual_machine.location,
+
                 report.virtual_machine.vm_size,
-                f"{report.metrics.cpu_average_percent:.2f}%",
-                f"{report.metrics.memory_average_percent:.2f}%",
-                recommendation,
-                confidence,
-                recommended_size,
+
+                report.analysis.recommended_vm_size,
+
+                final_recommendation,
+
+                monthly_savings,
+
+                annual_savings,
             )
         self.console.print(table)
 
-####################################################################
-# Optimization Summary
-####################################################################
+            ####################################################################
+            # Cloud Optimization Summary
+            ####################################################################
 
     def render_summary(
         self,
-        reports: list[VMOptimizationReport],
-    ) -> None:
-
-        upsize = 0
-        downsize = 0
-        keep = 0
-        insufficient = 0
-
-        for report in reports:
-
-            action = report.analysis.recommendation.value
-
-            if action == "UPSIZE":
-                upsize += 1
-
-            elif action == "DOWNSIZE":
-                downsize += 1
-
-            elif action == "KEEP_CURRENT_SIZE":
-                keep += 1
-
-            else:
-                insufficient += 1
-
+        reports,
+    ):
         table = Table(
             title="Cloud Optimization Summary"
         )
 
         table.add_column(
             "Metric",
-            style="cyan",
+            style="bold cyan",
         )
 
         table.add_column(
@@ -339,32 +318,63 @@ class ConsoleRenderer:
             justify="right",
         )
 
-        table.add_row(
-            "Virtual Machines",
-            str(len(reports)),
+        vm_count = len(reports)
+
+        current_monthly_cost = sum(
+
+            report.cost_analysis.current_monthly_cost
+
+            for report in reports
+        )
+
+        optimized_monthly_cost = sum(
+
+            report.cost_analysis.recommended_monthly_cost
+
+            for report in reports
+        )
+
+        monthly_savings = sum(
+
+            report.cost_analysis.monthly_savings
+
+            for report in reports
+        )
+
+        annual_savings = sum(
+
+            report.cost_analysis.yearly_savings
+
+            for report in reports
         )
 
         table.add_row(
-            "Upsize",
-            str(upsize),
+            "Virtual Machines Analyzed",
+            str(vm_count),
         )
 
         table.add_row(
-            "Downsize",
-            str(downsize),
+            "Current Monthly Cost",
+            f"${current_monthly_cost:.2f}",
         )
 
         table.add_row(
-            "Keep Current Size",
-            str(keep),
+            "Optimized Monthly Cost",
+            f"${optimized_monthly_cost:.2f}",
         )
 
         table.add_row(
-            "Insufficient Data",
-            str(insufficient),
+            "Estimated Monthly Savings",
+            f"${monthly_savings:.2f}",
+        )
+
+        table.add_row(
+            "Estimated Annual Savings",
+            f"${annual_savings:.2f}",
         )
 
         self.console.print(table)
+    
 ####################################################################
 # Detailed Report
 ####################################################################
@@ -416,6 +426,27 @@ class ConsoleRenderer:
                 f"    [bold]Current VM SKU:[/bold] "
                 f"{report.virtual_machine.vm_size}"
             )
+            
+            ####################################################################
+            # Business Metadata
+            ####################################################################
+
+            for key, value in report.metadata.items():
+
+                if not value:
+                    continue
+
+                display_name = (
+                    key.replace(
+                        "_",
+                        " ",
+                    ).title()
+                )
+
+                self.console.print(
+                    f"    [bold]{display_name}: [/bold]"
+                    f"{value} "
+                )
 
             self.console.print()
             
