@@ -541,10 +541,51 @@ class ConsoleRenderer:
             self.console.print(
                 "[bold cyan]Recommended Target SKU[/bold cyan]"
             )
-
             self.console.print(
                 f"    {report.analysis.recommended_vm_size}"
             )
+            self.console.print()
+
+            self.console.print(
+                "[bold cyan]Cost Analysis[/bold cyan]"
+            )
+
+            self.console.print(
+                f"    [bold]Currency:[/bold] "
+                f"{report.cost_analysis.currency}"
+            )
+
+            self.console.print(
+                f"    [bold]Current Hourly Cost:[/bold] "
+                f"${report.cost_analysis.current_hourly_cost:.4f}"
+            )
+
+            self.console.print(
+                f"    [bold]Recommended Hourly Cost:[/bold] "
+                f"${report.cost_analysis.recommended_hourly_cost:.4f}"
+            )
+
+            self.console.print(
+                f"    [bold]Current Monthly Cost:[/bold] "
+                f"${report.cost_analysis.current_monthly_cost:.2f}"
+            )
+
+            self.console.print(
+                f"    [bold]Recommended Monthly Cost:[/bold] "
+                f"${report.cost_analysis.recommended_monthly_cost:.2f}"
+            )
+
+            self.console.print(
+                f"    [bold]Estimated Monthly Savings:[/bold] "
+                f"${report.cost_analysis.monthly_savings:.2f}"
+            )
+
+            self.console.print(
+                f"    [bold]Estimated Annual Savings:[/bold] "
+                f"${report.cost_analysis.yearly_savings:.2f}"
+            )
+
+
 
             self.console.rule()
             

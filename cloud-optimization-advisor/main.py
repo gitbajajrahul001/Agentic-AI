@@ -55,6 +55,15 @@ from app.models.candidate_evaluation import (
     CandidateEvaluation,
 )
 
+from app.connectors.azure.pricing_connector import (
+    PricingConnector,
+)
+
+pricing_connector = PricingConnector()
+
+HOURS_PER_MONTH = 730
+
+
 console = Console()
 
 def main():
@@ -222,21 +231,28 @@ def main():
     recommendation_engine = RecommendationEngine(
         recommendation_policy
     )
-    
-####################################################################
-# Optimization Reports
-####################################################################
+
+    ####################################################################
+    # Optimization Reports
+    ####################################################################
 
     reports = []
-    
 
     for vm in virtual_machines:
+
+        ###############################################################
+        # Metrics
+        ###############################################################
 
         metrics = (
             metrics_connector.get_virtual_machine_metrics(
                 vm
             )
         )
+
+        ###############################################################
+        # Initial Recommendation
+        ###############################################################
 
         analysis = (
             recommendation_engine.analyze(
@@ -245,29 +261,37 @@ def main():
             )
         )
 
+        ###############################################################
+        # Report
+        ###############################################################
 
-        reports.append(
-            VMOptimizationReport(
-                virtual_machine=vm,
-                metrics=metrics,
-                analysis=analysis,
-            )
+        report = VMOptimizationReport(
+
+            virtual_machine=vm,
+
+            metrics=metrics,
+
+            analysis=analysis,
         )
-        candidates = (
-        vm_sizing_engine.get_candidates(
-            vm.vm_size,
-            analysis.recommendation,
-            )
-        )
-        #
-        # Default to the current VM size.
-        # If every candidate fails validation,
-        # we will keep the existing VM.
-        #
+
+        ###############################################################
+        # Default Recommendation
+        ###############################################################
+
         analysis.recommended_vm_size = (
             vm.vm_size
         )
-        
+
+        ###############################################################
+        # Candidate Evaluation
+        ###############################################################
+
+        candidates = (
+            vm_sizing_engine.get_candidates(
+                vm.vm_size,
+                analysis.recommendation,
+            )
+        )
 
         for candidate in candidates:
 
@@ -281,12 +305,9 @@ def main():
                 candidate_vm_size=candidate.name,
 
                 validation_summary=summary,
-            )
 
-            #
-            # Store the validation result for this candidate.
-            #
-            evaluation.passed_validation = summary.passed
+                passed_validation=summary.passed,
+            )
 
             analysis.candidate_evaluations.append(
                 evaluation
@@ -300,6 +321,69 @@ def main():
 
                 break
 
+        ###############################################################
+        # Cost Analysis
+        ###############################################################
+
+        current_price = pricing_connector.get_vm_price(
+
+            region=vm.location,
+
+            vm_size=vm.vm_size,
+        )
+
+        recommended_price = pricing_connector.get_vm_price(
+
+            region=vm.location,
+
+            vm_size=analysis.recommended_vm_size,
+        )
+
+        report.cost_analysis.currency = (
+            current_price.currency
+        )
+
+        report.cost_analysis.current_hourly_cost = (
+            current_price.hourly_price
+        )
+
+        report.cost_analysis.recommended_hourly_cost = (
+            recommended_price.hourly_price
+        )
+
+        report.cost_analysis.current_monthly_cost = (
+            current_price.hourly_price
+            * HOURS_PER_MONTH
+        )
+
+        report.cost_analysis.recommended_monthly_cost = (
+            recommended_price.hourly_price
+            * HOURS_PER_MONTH
+        )
+
+        report.cost_analysis.monthly_savings = (
+            report.cost_analysis.current_monthly_cost
+            -
+            report.cost_analysis.recommended_monthly_cost
+        )
+
+        report.cost_analysis.yearly_savings = (
+            report.cost_analysis.monthly_savings
+            * 12
+        )
+
+        ###############################################################
+        # Store Report
+        ###############################################################
+
+        reports.append(
+            report
+        )
+
+    ####################################################################
+    # Render
+    ####################################################################
+
     renderer.render_summary(
         reports
     )
@@ -307,11 +391,12 @@ def main():
     renderer.render_dashboard(
         reports
     )
-    
-    renderer.render_detailed_report(
-    reports
-    )
-    
 
+    renderer.render_detailed_report(
+        reports
+    )
+
+################    
 if __name__ == "__main__":
-    main()
+        main()
+################

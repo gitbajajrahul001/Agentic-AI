@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from app.models.azure_virtual_machine import (
     AzureVirtualMachine,
@@ -11,6 +11,11 @@ from app.models.azure_virtual_machine_metrics import (
 from app.models.VirtualMachineAnalysis import (
     VirtualMachineAnalysis,
 )
+
+from app.models.cost_analysis import (
+    CostAnalysis,
+)
+
 
 
 class VMOptimizationReport(BaseModel):
@@ -27,3 +32,7 @@ class VMOptimizationReport(BaseModel):
     metrics: AzureVirtualMachineMetrics
 
     analysis: VirtualMachineAnalysis
+    
+    cost_analysis: CostAnalysis = Field(
+    default_factory=CostAnalysis
+)

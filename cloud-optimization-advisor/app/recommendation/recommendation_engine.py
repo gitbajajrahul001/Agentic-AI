@@ -36,13 +36,10 @@ class RecommendationEngine:
 
         self.policy = policy
 
-    ####################################################################
-    # Public API
-    ####################################################################
 
-####################################################################
-# Helpers
-####################################################################
+    ####################################################################
+    # Helpers
+    ####################################################################
 
     def _add_reason(
         self,
@@ -97,9 +94,17 @@ class RecommendationEngine:
             )
 
             self._add_reason(
+
                 analysis,
-                "Insufficient telemetry",
-                "...",
+
+                "Telemetry",
+
+                (
+                    f"Only {metrics.sample_count} telemetry samples "
+                    f"were collected. At least "
+                    f"{minimum_sample_count} samples are required "
+                    f"to produce a recommendation."
+                ),
             )
 
             return analysis
@@ -133,6 +138,7 @@ class RecommendationEngine:
             self._add_reason(
 
                 analysis,
+
                 "CPU",
 
                 (
@@ -142,7 +148,6 @@ class RecommendationEngine:
                     f"threshold ({cpu_upsize_threshold}%)."
                 ),
             )
-            
 
             return analysis
 
@@ -275,21 +280,98 @@ class RecommendationEngine:
             RecommendationConfidence.MEDIUM
         )
 
+        ################################################################
+        # CPU Reason
+        ################################################################
+
+        if (
+            metrics.cpu_average_percent <
+            cpu_downsize_threshold
+        ):
+
+            cpu_message = (
+
+                f"Average CPU utilization "
+                f"({metrics.cpu_average_percent:.2f}%) "
+                f"is below the configured downsize "
+                f"threshold ({cpu_downsize_threshold}%)."
+
+            )
+
+        elif (
+            metrics.cpu_average_percent >=
+            cpu_upsize_threshold
+        ):
+
+            cpu_message = (
+
+                f"Average CPU utilization "
+                f"({metrics.cpu_average_percent:.2f}%) "
+                f"exceeds the configured upsize "
+                f"threshold ({cpu_upsize_threshold}%)."
+
+            )
+
+        else:
+
+            cpu_message = (
+
+                f"Average CPU utilization "
+                f"({metrics.cpu_average_percent:.2f}%) "
+                f"is within the configured operating range."
+
+            )
+
         self._add_reason(
 
             analysis,
 
             "CPU",
 
-            (
-                f"Average CPU utilization "
-                f"({metrics.cpu_average_percent:.2f}%) "
-                f"is below the configured upsize "
-                f"threshold ({cpu_upsize_threshold}%) "
-                f"and above the configured downsize "
-                f"threshold ({cpu_downsize_threshold}%)."
-            ),
+            cpu_message,
         )
+
+        ################################################################
+        # Memory Reason
+        ################################################################
+
+        if (
+            metrics.memory_average_percent <
+            memory_downsize_threshold
+        ):
+
+            memory_message = (
+
+                f"Average memory utilization "
+                f"({metrics.memory_average_percent:.2f}%) "
+                f"is below the configured downsize "
+                f"threshold ({memory_downsize_threshold}%)."
+
+            )
+
+        elif (
+            metrics.memory_average_percent >=
+            memory_upsize_threshold
+        ):
+
+            memory_message = (
+
+                f"Average memory utilization "
+                f"({metrics.memory_average_percent:.2f}%) "
+                f"exceeds the configured upsize "
+                f"threshold ({memory_upsize_threshold}%)."
+
+            )
+
+        else:
+
+            memory_message = (
+
+                f"Average memory utilization "
+                f"({metrics.memory_average_percent:.2f}%) "
+                f"is within the configured operating range."
+
+            )
 
         self._add_reason(
 
@@ -297,15 +379,12 @@ class RecommendationEngine:
 
             "Memory",
 
-            (
-                f"Average memory utilization "
-                f"({metrics.memory_average_percent:.2f}%) "
-                f"is below the configured upsize "
-                f"threshold ({memory_upsize_threshold}%) "
-                f"and above the configured downsize "
-                f"threshold ({memory_downsize_threshold}%)."
-            ),
+            memory_message,
         )
+
+        ################################################################
+        # Recommendation
+        ################################################################
 
         self._add_reason(
 
@@ -313,7 +392,10 @@ class RecommendationEngine:
 
             "Recommendation",
 
-            "The current VM size remains appropriate based on the configured policy.",
+            (
+                "The current VM size remains appropriate "
+                "based on the configured policy."
+            ),
         )
 
         return analysis

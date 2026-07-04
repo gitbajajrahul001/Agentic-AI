@@ -41,7 +41,7 @@ class PlatformValidator:
                 candidate,
             ),
 
-            self._validate_ephemeral_os_disk(
+            self._validate_ephemeral_os_disk_enabled(
                 vm,
                 candidate,
             ),
@@ -174,13 +174,13 @@ class PlatformValidator:
                 "CPU architecture."
             ),
         )
-    def _validate_ephemeral_os_disk(
+    def _validate_ephemeral_os_disk_enabled(
         self,
         vm: AzureVirtualMachine,
         candidate: AzureVmSku,
     ) -> ValidationResult:
 
-        if not vm.platform_profile.ephemeral_os_disk:
+        if not vm.platform_profile.ephemeral_os_disk_enabled:
 
             return self._result(
                 rule="Ephemeral OS Disk",

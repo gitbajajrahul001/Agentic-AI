@@ -167,9 +167,9 @@ Resources
                             "",
                         ),
 
-                        ephemeral_os_disk=(
+                        ephemeral_os_disk_enabled=(
                             row.get(
-                                "ephemeralOsDisk",
+                                "ephemeral_os_disk_enabled",
                                 ""
                             )
                             == "Local"
