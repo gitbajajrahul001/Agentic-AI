@@ -9,6 +9,12 @@ azure:
 log_analytics:
   workspace_id: "d1090953-acb4-45bf-957c-1acd70e9d5a4"
   
+storage:
+
+  account_name: staccagenticai
+
+  container_name: finops-repo
+
 observation_window: 30
 
 worker_threads: 20

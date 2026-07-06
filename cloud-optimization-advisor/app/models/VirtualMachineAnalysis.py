@@ -31,10 +31,15 @@ class VirtualMachineAnalysis(BaseModel):
     recommendation: RecommendationAction = (
         RecommendationAction.KEEP_CURRENT_SIZE
     )
+    final_recommendation: RecommendationAction = (
+        RecommendationAction.KEEP_CURRENT_SIZE
+    )
 
     confidence: RecommendationConfidence = (
         RecommendationConfidence.MEDIUM
     )
+    
+
 
     ####################################################################
     # VM Sizes

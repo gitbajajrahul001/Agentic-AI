@@ -62,6 +62,22 @@ from app.metadata.metadata_engine import (
     MetadataEngine,
 )
 
+from app.knowledge.knowledge_serializer import (
+    KnowledgeSerializer,
+)
+
+from app.exporters.json_exporter import (
+    JsonExporter,
+)
+
+from app.recommendation.recommendation_action import (
+    RecommendationAction,
+)
+
+from app.connectors.azure.blob_storage_connector import (
+    BlobStorageConnector,
+)
+
 console = Console()
 
 def main():
@@ -117,6 +133,21 @@ def main():
     )
     credential = (
         authentication_connector.authenticate()
+    )
+    blob_storage_connector = (
+        BlobStorageConnector(
+            credential=credential,
+            account_name=config[
+                "storage"
+            ][
+                "account_name"
+            ],
+            container_name=config[
+                "storage"
+            ][
+                "container_name"
+            ],
+        )
     )
     console.print(
         "✓ Successfully authenticated to Azure.",
@@ -259,12 +290,23 @@ def main():
     metadata_engine = MetadataEngine(
         metadata_configuration,
     )
+    
+    knowledge_serializer = (
+    KnowledgeSerializer()
+    )
+    
+    json_exporter = (
+        JsonExporter(
+        )
+    )
 
     ####################################################################
     # Optimization Reports
     ####################################################################
 
     reports = []
+
+    exported_json_files = []
 
     for vm in virtual_machines:
 
@@ -319,6 +361,22 @@ def main():
         analysis.recommended_vm_size = (
             vm.vm_size
         )
+        
+        if (
+            analysis.recommended_vm_size
+            ==
+            vm.vm_size
+        ):
+
+            analysis.final_recommendation = (
+                RecommendationAction.KEEP_CURRENT_SIZE
+            )
+
+        else:
+
+            analysis.final_recommendation = (
+                analysis.recommendation
+            )
 
         ###############################################################
         # Candidate Evaluation
@@ -409,6 +467,28 @@ def main():
             report.cost_analysis.monthly_savings
             * 12
         )
+        
+        
+        knowledge_document = (
+            knowledge_serializer.serialize(
+                report,
+            )
+        )
+
+        output_file = (
+            json_exporter.export(
+                knowledge_document,
+            )
+        )
+        blob_name = (
+            blob_storage_connector.upload_file(
+                output_file,
+            )
+        )
+
+        exported_json_files.append(
+            output_file
+        )
 
         ###############################################################
         # Store Report
@@ -417,6 +497,19 @@ def main():
         reports.append(
             report
         )
+        
+    console.print(
+
+        f"✓ Exported {len(exported_json_files)} JSON knowledge document(s).",
+
+    style="green",
+    )
+    console.print(
+
+        f"✓ Uploaded {len(exported_json_files)} knowledge document(s) to Azure Blob Storage.",
+
+        style="green",
+    )
 
     ####################################################################
     # Render

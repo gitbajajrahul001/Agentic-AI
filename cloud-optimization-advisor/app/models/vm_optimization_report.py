@@ -2,6 +2,9 @@ from datetime import (
     datetime,
     timezone,
 )
+from uuid import (
+    uuid4,
+)
 
 from pydantic import (
     BaseModel,
@@ -22,6 +25,7 @@ from app.models.VirtualMachineAnalysis import (
 from app.models.cost_analysis import (
     CostAnalysis,
 )
+
 
 
 
@@ -47,6 +51,12 @@ class VMOptimizationReport(BaseModel):
 
     metadata: dict[str, str] = Field(
         default_factory=dict
+    )
+    
+    execution_id: str = Field(
+        default_factory=lambda: str(
+            uuid4()
+        )
     )
 
     generated_at: datetime = Field(
