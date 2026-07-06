@@ -1,0 +1,101 @@
+cloud-optimization-advisor
+├── app
+│   ├── __init__.py
+│   ├── config
+│   │   ├── __init__.py
+│   │   ├── configuration_loader.py
+│   │   ├── policy_loader.py
+│   │   └── supported_vm_sizes_loader.py
+│   ├── connectors
+│   │   ├── __init__.py
+│   │   └── azure
+│   │       ├── __init__.py
+│   │       ├── advisor_connector.py
+│   │       ├── authentication_connector.py
+│   │       ├── base_azure_connector.py
+│   │       ├── blob_storage_connector.py
+│   │       ├── compute_connector.py
+│   │       ├── cost_management_connector.py
+│   │       ├── metrics_definition_connector.py
+│   │       ├── monitor_connector.py
+│   │       ├── pricing_connector.py
+│   │       ├── resource_graph_connector.py
+│   │       ├── subscription_connector.py
+│   │       ├── virtual_machine_metrics_connector.py
+│   │       └── vm_sku_connector.py
+│   ├── core
+│   │   ├── __init__.py
+│   │   ├── config_loader.py
+│   │   ├── constants.py
+│   │   └── policy_loader.py
+│   ├── exporters
+│   │   ├── __init__.py
+│   │   ├── csv_exporter.py
+│   │   ├── export_manager.py
+│   │   └── json_exporter.py
+│   ├── knowledge
+│   │   ├── __init__.py
+│   │   └── knowledge_serializer.py
+│   ├── metadata
+│   │   ├── __init__.py
+│   │   └── metadata_engine.py
+│   ├── models
+│   │   ├── VirtualMachineAnalysis.py
+│   │   ├── __init__.py
+│   │   ├── azure_compute_profile.py
+│   │   ├── azure_network_profile.py
+│   │   ├── azure_platform_profile.py
+│   │   ├── azure_security_profile.py
+│   │   ├── azure_storage_profile.py
+│   │   ├── azure_virtual_machine.py
+│   │   ├── azure_virtual_machine_metrics.py
+│   │   ├── azure_vm_sku.py
+│   │   ├── candidate_evaluation.py
+│   │   ├── cost_analysis.py
+│   │   ├── recommendation_reason.py
+│   │   ├── validation_result.py
+│   │   ├── validation_summary.py
+│   │   ├── virtual_machine_metrics.py
+│   │   ├── vm_optimization_report.py
+│   │   └── vm_price.py
+│   ├── optimization
+│   │   ├── __init__.py
+│   │   └── optimization_engine.py
+│   ├── recommendation
+│   │   ├── __init__.py
+│   │   ├── recommendation_action.py
+│   │   ├── recommendation_confidence.py
+│   │   └── recommendation_engine.py
+│   ├── renderers
+│   │   ├── __init__.py
+│   │   └── console_renderer.py
+│   ├── sizing
+│   │   ├── __init__.py
+│   │   └── vm_sizing_engine.py
+│   ├── utils
+│   │   ├── __init__.py
+│   │   └── statistics.py
+│   └── validation
+│       ├── __init__.py
+│       ├── recommendation_validator.py
+│       ├── validation_engine.py
+│       └── validators
+│           ├── __init__.py
+│           ├── compute_validator.py
+│           ├── network_validator.py
+│           ├── platform_validator.py
+│           └── storage_validator.py
+├── config
+│   ├── config.yaml
+│   ├── metadata_configuration.yaml
+│   └── supported_vm_sizes.yaml
+├── output
+│   ├── csv
+│   ├── json
+│   └── logs
+├── policies
+│   ├── __init__.py
+│   └── recommendation_policy.yaml
+├── README.md
+├── main.py
+└── requirements.txt
