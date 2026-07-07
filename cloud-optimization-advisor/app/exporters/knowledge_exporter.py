@@ -5,7 +5,7 @@ from pathlib import Path
 from datetime import datetime
 
 
-class JsonExporter:
+class KnowledgeExporter:
     """
     Persists knowledge documents as JSON files.
     """

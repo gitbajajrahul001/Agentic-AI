@@ -66,8 +66,8 @@ from app.knowledge.knowledge_serializer import (
     KnowledgeSerializer,
 )
 
-from app.exporters.json_exporter import (
-    JsonExporter,
+from app.exporters.knowledge_exporter import (
+    KnowledgeExporter,
 )
 
 from app.recommendation.recommendation_action import (
@@ -300,8 +300,8 @@ def main():
     KnowledgeSerializer()
     )
     
-    json_exporter = (
-        JsonExporter(
+    knowledge_exporter = (
+        KnowledgeExporter(
         )
     )
 
@@ -483,7 +483,7 @@ def main():
         )
 
         output_file = (
-            json_exporter.export(
+            knowledge_exporter.export(
                 knowledge_document,
             )
         )
