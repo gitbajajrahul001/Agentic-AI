@@ -24,4 +24,12 @@ class AggregationEngine:
             )
         )
 
-        print(resource_groups.keys())
+        for resource_group in resource_groups:
+
+            print()
+
+            print(
+                resource_group.model_dump_json(
+                    indent=4
+                )
+            )

@@ -1,6 +1,5 @@
 from pydantic import BaseModel
 
-
 class ResourceGroupKnowledge(BaseModel):
 
     execution: dict
@@ -12,8 +11,6 @@ class ResourceGroupKnowledge(BaseModel):
     optimization: dict
 
     financial: dict
-
-    validation: dict
 
     insights: dict
 

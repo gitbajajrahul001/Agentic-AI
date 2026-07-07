@@ -1,0 +1,130 @@
+{
+    "execution": {
+        "execution_id": "f2b1d564-9b94-468e-b9c8-d1e26a5dd2e3",
+        "generated_at": "2026-07-07T11:35:40.324069+00:00",
+        "policy_version": "1.0"
+    },
+    "inventory": {
+        "resource_id": "/subscriptions/24897839-6228-4983-9e64-035e30282968/resourceGroups/rg-agentic-ai/providers/Microsoft.Compute/virtualMachines/vm-agentic-ai2",
+        "resource_name": "vm-agentic-ai2",
+        "resource_type": "Microsoft.Compute/virtualMachines",
+        "subscription_id": "24897839-6228-4983-9e64-035e30282968",
+        "resource_group": "rg-agentic-ai",
+        "location": "centralindia",
+        "current_sku": "Standard_B2s",
+        "operating_system": null,
+        "power_state": null
+    },
+    "metadata": {
+        "owner": "bajajrahul001@gmail.com",
+        "cost_center": "IN-UP-GBN-201301",
+        "environment": "dev",
+        "application": "enterprise-internals"
+    },
+    "observability": {
+        "sample_count": 21,
+        "cpu_average_percent": 3.83,
+        "memory_average_percent": 76.05
+    },
+    "analysis": {
+        "recommendation": {
+            "pre_validation": "Downsize",
+            "post_validation": "Keep Current Size",
+            "confidence": "High",
+            "recommended_sku": "Standard_B2s",
+            "reasons": [
+                {
+                    "category": "CPU",
+                    "message": "Average CPU utilization (3.83%) is below the configured downsize threshold (5%)."
+                },
+                {
+                    "category": "Memory",
+                    "message": "Average memory utilization (76.05%) is below the configured downsize threshold (95%)."
+                },
+                {
+                    "category": "Recommendation",
+                    "message": "The virtual machine qualifies for downsizing."
+                }
+            ]
+        },
+        "validation": {
+            "passed": false,
+            "candidate_evaluations": [
+                {
+                    "candidate_sku": "Standard_B1s",
+                    "passed": false,
+                    "summary": {
+                        "passed": false,
+                        "results": [
+                            {
+                                "domain": "Storage",
+                                "rule": "Maximum Data Disks",
+                                "passed": false,
+                                "blocker": true,
+                                "message": "Candidate supports 2 data disks but the current VM uses 4."
+                            },
+                            {
+                                "domain": "Storage",
+                                "rule": "Premium Storage",
+                                "passed": true,
+                                "blocker": false,
+                                "message": "Current VM does not require Premium SSD."
+                            },
+                            {
+                                "domain": "Storage",
+                                "rule": "Ultra SSD",
+                                "passed": true,
+                                "blocker": false,
+                                "message": "Current VM does not require Ultra SSD."
+                            },
+                            {
+                                "domain": "Network",
+                                "rule": "Accelerated Networking",
+                                "passed": true,
+                                "blocker": false,
+                                "message": "Current VM does not require Accelerated Networking."
+                            },
+                            {
+                                "domain": "Network",
+                                "rule": "Maximum Network Interfaces",
+                                "passed": true,
+                                "blocker": false,
+                                "message": "Candidate supports 2 network interface(s)."
+                            },
+                            {
+                                "domain": "Platform",
+                                "rule": "Hyper-V Generation",
+                                "passed": true,
+                                "blocker": false,
+                                "message": "Current VM does not require a specific Hyper-V generation."
+                            },
+                            {
+                                "domain": "Platform",
+                                "rule": "CPU Architecture",
+                                "passed": true,
+                                "blocker": false,
+                                "message": "Current VM does not require a specific CPU architecture."
+                            },
+                            {
+                                "domain": "Platform",
+                                "rule": "Ephemeral OS Disk",
+                                "passed": true,
+                                "blocker": false,
+                                "message": "Current VM does not require an Ephemeral OS Disk."
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        "cost": {
+            "currency": "USD",
+            "current_hourly_cost": 0.0528,
+            "recommended_hourly_cost": 0.0528,
+            "current_monthly_cost": 38.544,
+            "recommended_monthly_cost": 38.544,
+            "monthly_savings": 0.0,
+            "annual_savings": 0.0
+        }
+    }
+}
