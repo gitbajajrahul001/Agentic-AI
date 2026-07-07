@@ -78,6 +78,11 @@ from app.connectors.azure.blob_storage_connector import (
     BlobStorageConnector,
 )
 
+from app.aggregation.aggregation_engine import (
+    AggregationEngine,
+)
+
+
 console = Console()
 
 def main():
@@ -300,6 +305,8 @@ def main():
         )
     )
 
+
+
     ####################################################################
     # Optimization Reports
     ####################################################################
@@ -509,6 +516,10 @@ def main():
         f"✓ Uploaded {len(exported_json_files)} knowledge document(s) to Azure Blob Storage.",
 
         style="green",
+    )
+    aggregation_engine = AggregationEngine()
+    aggregation_engine.run(
+        exported_json_files
     )
 
     ####################################################################
