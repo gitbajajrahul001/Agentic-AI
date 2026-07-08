@@ -532,10 +532,13 @@ def main():
         
         
     aggregation_engine = AggregationEngine()
-    resource_group_documents, subscription_documents = (
-        aggregation_engine.run(
-            exported_json_files,
-        )
+    
+    (
+        resource_group_documents,
+        subscription_documents,
+        enterprise_document,
+    ) = aggregation_engine.run(
+        exported_json_files,
     )
     
     for resource_group_document in resource_group_documents:
@@ -554,6 +557,13 @@ def main():
             subscription_document.model_dump(),
 
             KnowledgeLevels.SUBSCRIPTION,
+        )
+    
+        knowledge_manager.publish(
+
+            enterprise_document.model_dump(),
+
+            KnowledgeLevels.ENTERPRISE,
         )
 
     ####################################################################

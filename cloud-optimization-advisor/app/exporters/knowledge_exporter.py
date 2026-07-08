@@ -52,6 +52,10 @@ class KnowledgeExporter:
             return (
                 knowledge_document["subscription"]["subscription_id"]
             )
+            
+        if knowledge_level == KnowledgeLevels.ENTERPRISE:
+
+            return "enterprise"
 
         raise ValueError(
             f"Unsupported knowledge level: {knowledge_level}"

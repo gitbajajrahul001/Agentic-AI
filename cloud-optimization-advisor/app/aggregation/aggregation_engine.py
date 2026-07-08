@@ -6,6 +6,10 @@ from app.aggregation.subscription_aggregator import (
     SubscriptionAggregator,
 )
 
+from app.aggregation.enterprise_aggregator import (
+    EnterpriseAggregator,
+)
+
 
 class AggregationEngine:
 
@@ -20,6 +24,10 @@ class AggregationEngine:
 
         subscription_aggregator = (
             SubscriptionAggregator()
+        )
+
+        enterprise_aggregator = (
+            EnterpriseAggregator()
         )
 
         vm_documents = (
@@ -42,8 +50,19 @@ class AggregationEngine:
                 ]
             )
         )
+        
+        enterprise_document = (
+            enterprise_aggregator.aggregate(
+                [
+                    subscription.model_dump()
+                    for subscription in subscription_documents
+                ]
+            )
+        )
 
         return (
             resource_group_documents,
             subscription_documents,
+            enterprise_document,
         )
+        

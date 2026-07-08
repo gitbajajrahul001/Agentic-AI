@@ -1,61 +1,65 @@
 cloud-optimization-advisor
 ├── app
-│   ├── __init__.py
+│   ├── aggregation
+│   │   ├── __init__.py
+│   │   ├── aggregation_engine.py
+│   │   ├── enterprise_aggregator.py
+│   │   ├── resource_group_aggregator.py
+│   │   └── subscription_aggregator.py
 │   ├── config
 │   │   ├── __init__.py
 │   │   ├── configuration_loader.py
 │   │   ├── policy_loader.py
 │   │   └── supported_vm_sizes_loader.py
 │   ├── connectors
-│   │   ├── __init__.py
-│   │   └── azure
-│   │       ├── __init__.py
-│   │       ├── advisor_connector.py
-│   │       ├── authentication_connector.py
-│   │       ├── base_azure_connector.py
-│   │       ├── blob_storage_connector.py
-│   │       ├── compute_connector.py
-│   │       ├── cost_management_connector.py
-│   │       ├── metrics_definition_connector.py
-│   │       ├── monitor_connector.py
-│   │       ├── pricing_connector.py
-│   │       ├── resource_graph_connector.py
-│   │       ├── subscription_connector.py
-│   │       ├── virtual_machine_metrics_connector.py
-│   │       └── vm_sku_connector.py
+│   │   ├── azure
+│   │   │   ├── __init__.py
+│   │   │   ├── advisor_connector.py
+│   │   │   ├── authentication_connector.py
+│   │   │   ├── base_azure_connector.py
+│   │   │   ├── blob_storage_connector.py
+│   │   │   ├── compute_connector.py
+│   │   │   ├── cost_management_connector.py
+│   │   │   ├── metrics_definition_connector.py
+│   │   │   ├── pricing_connector.py
+│   │   │   ├── resource_graph_connector.py
+│   │   │   ├── subscription_connector.py
+│   │   │   ├── virtual_machine_metrics_connector.py
+│   │   │   └── vm_sku_connector.py
+│   │   └── __init__.py
 │   ├── core
 │   │   ├── __init__.py
-│   │   ├── config_loader.py
-│   │   ├── constants.py
-│   │   └── policy_loader.py
+│   │   └── constants.py
 │   ├── exporters
 │   │   ├── __init__.py
 │   │   ├── csv_exporter.py
 │   │   ├── export_manager.py
-│   │   └── json_exporter.py
+│   │   └── knowledge_exporter.py
 │   ├── knowledge
 │   │   ├── __init__.py
+│   │   ├── knowledge_manager.py
 │   │   └── knowledge_serializer.py
 │   ├── metadata
 │   │   ├── __init__.py
 │   │   └── metadata_engine.py
 │   ├── models
-│   │   ├── VirtualMachineAnalysis.py
 │   │   ├── __init__.py
-│   │   ├── azure_compute_profile.py
 │   │   ├── azure_network_profile.py
 │   │   ├── azure_platform_profile.py
 │   │   ├── azure_security_profile.py
 │   │   ├── azure_storage_profile.py
-│   │   ├── azure_virtual_machine.py
 │   │   ├── azure_virtual_machine_metrics.py
+│   │   ├── azure_virtual_machine.py
 │   │   ├── azure_vm_sku.py
 │   │   ├── candidate_evaluation.py
 │   │   ├── cost_analysis.py
+│   │   ├── enterprise_knowledge.py
 │   │   ├── recommendation_reason.py
+│   │   ├── resource_group_knowledge.py
+│   │   ├── subscription_knowledge.py
 │   │   ├── validation_result.py
 │   │   ├── validation_summary.py
-│   │   ├── virtual_machine_metrics.py
+│   │   ├── VirtualMachineAnalysis.py
 │   │   ├── vm_optimization_report.py
 │   │   └── vm_price.py
 │   ├── optimization
@@ -75,27 +79,26 @@ cloud-optimization-advisor
 │   ├── utils
 │   │   ├── __init__.py
 │   │   └── statistics.py
-│   └── validation
-│       ├── __init__.py
-│       ├── recommendation_validator.py
-│       ├── validation_engine.py
-│       └── validators
-│           ├── __init__.py
-│           ├── compute_validator.py
-│           ├── network_validator.py
-│           ├── platform_validator.py
-│           └── storage_validator.py
+│   ├── validation
+│   │   ├── validators
+│   │   │   ├── __init__.py
+│   │   │   ├── compute_validator.py
+│   │   │   ├── network_validator.py
+│   │   │   ├── platform_validator.py
+│   │   │   └── storage_validator.py
+│   │   ├── __init__.py
+│   │   ├── recommendation_validator.py
+│   │   └── validation_engine.py
+│   └── __init__.py
 ├── config
 │   ├── config.yaml
 │   ├── metadata_configuration.yaml
 │   └── supported_vm_sizes.yaml
-├── output
-│   ├── csv
-│   ├── json
-│   └── logs
 ├── policies
 │   ├── __init__.py
 │   └── recommendation_policy.yaml
-├── README.md
+├── .gitignore
+├── .python-version
 ├── main.py
+├── README.md
 └── requirements.txt

@@ -4,10 +4,11 @@
         "generated_at": "2026-07-08T09:35:47.304731+00:00",
         "policy_version": "1.0"
     },
-    "subscription": {
-        "subscription_id": "24897839-6228-4983-9e64-035e30282968"
+    "enterprise": {
+        "name": "Azure Estate"
     },
     "inventory": {
+        "subscription_count": 1,
         "resource_group_count": 1,
         "vm_count": 2
     },
@@ -22,9 +23,9 @@
         "annual_savings": 0.0
     },
     "insights": {
-        "summary": "All virtual machines are appropriately sized."
+        "summary": "All virtual machines across the Azure estate are appropriately sized."
     },
     "source_documents": [
-        "rg-agentic-ai"
+        "24897839-6228-4983-9e64-035e30282968"
     ]
 }
