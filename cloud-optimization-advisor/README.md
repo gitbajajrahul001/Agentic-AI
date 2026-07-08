@@ -1,41 +1,23 @@
 # Cloud Optimization Advisor
 
-An enterprise-oriented Python application that analyzes Azure Virtual Machines using live Azure telemetry, generates explainable optimization recommendations, enriches them with business context and pricing information, and persists the results as structured knowledge documents.
+An enterprise-grade Python application that analyzes Azure Virtual Machines using live Azure telemetry, generates explainable FinOps optimization recommendations, and transforms the results into a hierarchical knowledge repository for AI-driven cloud operations.
 
-The project is designed around a **knowledge-first architecture**. Instead of generating recommendations only for immediate display, it converts optimization results into durable JSON knowledge documents that can be searched, indexed and consumed by downstream AI systems.
+Unlike traditional optimization tools that produce reports for immediate consumption, Cloud Optimization Advisor generates structured knowledge objects at multiple levels of the Azure hierarchy. These knowledge documents become durable enterprise assets that can be consumed by AI agents, search platforms, dashboards, APIs, and automation workflows.
 
-The long-term vision is to evolve this application into a cloud-native optimization platform where Azure discovery, optimization logic and AI-powered insights are decoupled into independently deployable services.
-
----
-
-## Project Objectives
-
-The project has four primary objectives:
-
-- Analyze Azure Virtual Machines using live Azure APIs.
-- Produce explainable optimization recommendations.
-- Persist recommendations as structured enterprise knowledge.
-- Build a foundation for future Agentic AI and Azure AI Search integration.
-
-Unlike many proof-of-concept FinOps projects, this application deliberately separates:
-
-- Azure connectivity
-- Business logic
-- Recommendation policies
-- Validation
-- Knowledge generation
-- Data persistence
-
-This separation allows each component to evolve independently.
+The project is intentionally designed as the foundation of an enterprise cloud optimization platform where Azure discovery, optimization logic, knowledge generation, and AI-powered reasoning are independent architectural components.
 
 ---
 
-# Current Architecture
+# Architecture Overview
 
-The current implementation follows this processing pipeline.
+The application implements a layered optimization pipeline followed by hierarchical knowledge generation.
 
 ```text
 Azure
+
+↓
+
+Configuration
 
 ↓
 
@@ -67,70 +49,90 @@ Metadata Enrichment
 
 ↓
 
-VMOptimizationReport
+VM Optimization Report
 
 ↓
 
-Knowledge Serializer
+Knowledge Serialization
 
 ↓
 
-JSON Export
+Hierarchical Knowledge Aggregation
+
+    VM
+      ↓
+Resource Group
+      ↓
+Subscription
+      ↓
+Enterprise
 
 ↓
 
-Azure Blob Storage
+Knowledge Repository
+
+    ├── Local JSON Repository
+    └── Azure Blob Storage
 ```
 
-Each stage has a clearly defined responsibility.
+The architecture separates optimization from knowledge generation, allowing downstream AI systems to consume structured knowledge rather than raw operational data.
 
 ---
 
-# Features
+# Core Capabilities
 
-## Azure Resource Discovery
+## Azure Discovery
+
+Discovers Azure infrastructure using live Azure APIs.
+
+Current capabilities include:
 
 - Azure Authentication
 - Subscription Discovery
-- Resource Graph Inventory
+- Azure Resource Graph Inventory
 - Azure VM SKU Discovery
-
----
-
-## Metrics Collection
-
-Collects live Azure Monitor telemetry including:
-
-- CPU utilization
-- Memory utilization
-- Sample count
+- Azure Monitor Metrics
+- Azure Retail Pricing API
 
 ---
 
 ## Recommendation Engine
 
-Generates recommendations based on configurable policies.
+Evaluates Azure Virtual Machines using configurable optimization policies.
 
-Current recommendation types include:
+Current recommendation types:
 
 - Downsize
 - Upsize
 - Keep Current Size
 - Insufficient Data
 
-Recommendations include confidence levels and human-readable reasoning.
+Every recommendation includes:
+
+- Recommendation
+- Confidence
+- Human-readable reasoning
+- Validation outcome
+
+The recommendation engine is completely policy driven.
 
 ---
 
-## VM Sizing
+## VM Sizing Engine
 
-Identifies candidate VM sizes using configurable supported SKU definitions.
+Identifies candidate VM sizes based on configurable supported SKU definitions.
+
+The sizing engine determines:
+
+- Direction (Upsize / Downsize)
+- Candidate ordering
+- SKU compatibility
 
 ---
 
 ## Validation Engine
 
-Validates recommendations against Azure platform constraints before presenting them.
+Before recommending any resize operation, every candidate VM is validated against Azure platform constraints.
 
 Current validation covers:
 
@@ -150,135 +152,274 @@ Current validation covers:
 - CPU Architecture
 - Ephemeral OS Disk Support
 
+Only candidates that pass all validation checks are recommended.
+
 ---
 
 ## Cost Analysis
 
-Uses the Azure Retail Pricing API to calculate:
+Integrates with the Azure Retail Pricing API to calculate:
 
-- Current hourly cost
-- Recommended hourly cost
-- Estimated monthly savings
-- Estimated annual savings
+- Current Hourly Cost
+- Recommended Hourly Cost
+- Monthly Savings
+- Annual Savings
+
+Cost calculations are embedded directly into every knowledge document.
 
 ---
 
 ## Metadata Enrichment
 
-Business metadata is extracted dynamically from Azure resource tags.
+Business metadata is dynamically extracted from Azure resource tags.
 
-Metadata is configuration driven.
-
-Current fields include:
+Current metadata includes:
 
 - Owner
 - Cost Center
 - Environment
 - Application
 
-Additional metadata can be added without changing application code.
+Metadata mappings are configuration-driven and require no code changes.
 
 ---
 
-## Knowledge Generation
+# Hierarchical Knowledge Architecture
 
-The application produces structured JSON knowledge documents instead of only console output.
+The application follows a knowledge-first architecture.
 
-Each document contains:
+Instead of generating isolated reports, optimization results are transformed into structured knowledge objects.
 
-- Execution metadata
+## Level 1 — Virtual Machine Knowledge
+
+One knowledge document is generated per Azure Virtual Machine.
+
+Contains:
+
 - Inventory
-- Observability
+- Performance metrics
 - Recommendation
 - Validation
 - Cost analysis
-- Business metadata
-
-These documents become durable optimization knowledge that can later be indexed and queried by AI systems.
+- Metadata
+- Execution metadata
 
 ---
 
-## Azure Blob Storage Integration
+## Level 2 — Resource Group Knowledge
 
-Generated knowledge documents are automatically uploaded to Azure Blob Storage.
+VM knowledge is aggregated into Resource Group knowledge.
 
-Blob Storage acts as the enterprise knowledge repository.
+Contains:
+
+- VM count
+- Recommendation summary
+- Optimization score
+- Financial summary
+- Resource Group insights
+
+---
+
+## Level 3 — Subscription Knowledge
+
+Resource Group knowledge is aggregated into Subscription knowledge.
+
+Contains:
+
+- Resource Group count
+- VM count
+- Optimization statistics
+- Financial rollups
+- Subscription-level insights
+
+---
+
+## Level 4 — Enterprise Knowledge
+
+Subscription knowledge is aggregated into a single Enterprise knowledge document.
+
+Provides:
+
+- Estate-wide optimization summary
+- Total subscriptions
+- Total resource groups
+- Total virtual machines
+- Overall optimization score
+- Enterprise savings
+- Executive summary
+
+---
+
+# Knowledge Repository
+
+The generated knowledge hierarchy is persisted in two locations.
+
+## Local Repository
+
+```
+output/
+
+├── vm-knowledge/
+
+├── resource-group-knowledge/
+
+├── subscription-knowledge/
+
+└── enterprise-knowledge/
+```
+
+---
+
+## Azure Blob Storage
+
+Each knowledge level is stored in its own container.
+
+```
+vm-knowledge
+
+resource-group-knowledge
+
+subscription-knowledge
+
+enterprise-knowledge
+```
+
+Each resource maintains a single authoritative knowledge document representing its latest state.
+
+Historical versions can be retained using Azure Blob Versioning.
 
 ---
 
 # Repository Structure
 
-```text
-app/
-├── config/
-├── connectors/
-├── exporters/
-├── knowledge/
-├── metadata/
-├── models/
-├── optimization/
-├── recommendation/
-├── renderers/
-├── sizing/
-├── validation/
 ```
+cloud-optimization-advisor/
 
-The project intentionally separates:
-
-- Azure integrations
-- Business engines
-- Domain models
-- Rendering
-- Export
-- Knowledge generation
+├── app/
+│
+├── aggregation/
+│   ├── aggregation_engine.py
+│   ├── resource_group_aggregator.py
+│   ├── subscription_aggregator.py
+│   └── enterprise_aggregator.py
+│
+├── config/
+│
+├── connectors/
+│   └── azure/
+│
+├── exporters/
+│
+├── knowledge/
+│
+├── metadata/
+│
+├── models/
+│
+├── optimization/
+│
+├── recommendation/
+│
+├── renderers/
+│
+├── sizing/
+│
+├── validation/
+│
+├── config/
+├── policies/
+│
+├── main.py
+├── requirements.txt
+└── README.md
+```
 
 ---
 
 # Design Principles
 
-The application follows several architectural principles.
+## Knowledge First
 
-## Configuration Driven
+Knowledge documents are the primary output of the application.
 
-Recommendation policies, metadata mappings and supported VM sizes are maintained outside the application using YAML configuration.
+Console rendering is simply one presentation layer.
+
+This allows the same optimization results to power:
+
+- AI Agents
+- Dashboards
+- Search
+- APIs
+- Reports
+- Automation
 
 ---
 
-## Separation of Concerns
+## Hierarchical Aggregation
 
-Azure connectors communicate with Azure services.
+Knowledge is aggregated rather than repeatedly analyzed.
 
-Business engines implement optimization logic.
+```
+VM
 
-Serializers generate knowledge documents.
+↓
 
-Exporters persist knowledge.
+Resource Group
 
-Renderers display results.
+↓
 
-Each component has a single responsibility.
+Subscription
+
+↓
+
+Enterprise
+```
+
+This dramatically reduces retrieval cost and token consumption for downstream LLMs.
 
 ---
 
 ## Explainability
 
-Recommendations are not treated as black boxes.
+Recommendations are never black boxes.
 
 Every recommendation includes:
 
-- confidence
-- reasoning
-- validation outcome
-
-This enables operators and downstream AI systems to understand *why* a recommendation was generated.
+- Recommendation
+- Confidence
+- Business reasoning
+- Validation summary
+- Financial impact
 
 ---
 
-## Knowledge First
+## Configuration Driven
 
-Console output is considered a presentation layer.
+Business behavior is controlled through YAML configuration.
 
-The primary output of the application is structured knowledge suitable for long-term storage and future AI consumption.
+Current configurable components include:
+
+- Recommendation policies
+- Metadata mappings
+- Supported VM sizes
+
+---
+
+## Separation of Concerns
+
+The application intentionally separates:
+
+- Azure Connectors
+- Recommendation Logic
+- Validation
+- Cost Analysis
+- Metadata
+- Knowledge Serialization
+- Knowledge Aggregation
+- Export
+- Presentation
+
+Each component has a single responsibility.
 
 ---
 
@@ -289,108 +430,116 @@ The primary output of the application is structured knowledge suitable for long-
 - Azure Monitor
 - Azure Retail Pricing API
 - Azure Blob Storage
+- Azure SDK for Python
 - Pydantic
 - PyYAML
 - Rich
 
 ---
 
-# Current Status
-
-Implemented:
+# Current Features
 
 - Azure Authentication
-- Azure Resource Discovery
-- Azure Monitor Integration
+- Subscription Discovery
+- Resource Graph Integration
+- Azure Monitor Metrics
+- Azure VM SKU Discovery
 - Recommendation Engine
-- VM Sizing
+- VM Sizing Engine
 - Validation Engine
 - Cost Analysis
 - Metadata Extraction
 - Knowledge Serialization
-- JSON Export
-- Azure Blob Storage Upload
+- Hierarchical Knowledge Aggregation
+- JSON Knowledge Repository
+- Azure Blob Storage Integration
+- Console Rendering
 
-Planned:
+---
 
-- Azure AI Search
-- Agentic AI Integration
-- Containerization
-- REST API
-- Kubernetes Deployment
-- CI/CD Pipeline
+# Current Architecture Status
+
+| Capability | Status |
+|------------|--------|
+| Azure Discovery | ✅ Complete |
+| Recommendation Engine | ✅ Complete |
+| VM Sizing | ✅ Complete |
+| Validation Engine | ✅ Complete |
+| Cost Analysis | ✅ Complete |
+| Metadata Engine | ✅ Complete |
+| VM Knowledge | ✅ Complete |
+| Resource Group Knowledge | ✅ Complete |
+| Subscription Knowledge | ✅ Complete |
+| Enterprise Knowledge | ✅ Complete |
+| Local Knowledge Repository | ✅ Complete |
+| Azure Blob Knowledge Repository | ✅ Complete |
 
 ---
 
 # Roadmap
 
-The project is intended to evolve through several phases.
-
-## Phase 1
-
-Knowledge Generation
+## Phase 1 — Knowledge Platform
 
 Completed
 
+- Azure Discovery
+- Optimization Engine
+- Knowledge Generation
+- Hierarchical Aggregation
+- Blob Storage Repository
+
 ---
 
-## Phase 2
+## Phase 2 — Cloud Native Foundation
 
-Cloud-Native Foundation
-
-- Git workflow
 - Docker
-- Containerization
+- Docker Compose
+- GitHub Actions
+- Containerized Development
 
 ---
 
-## Phase 3
-
-Service Platform
+## Phase 3 — Service Platform
 
 - FastAPI
 - REST APIs
-- Microservices
+- Background Jobs
+- Authentication
+- OpenAPI
 
 ---
 
-## Phase 4
+## Phase 4 — Cloud Deployment
 
-Cloud Deployment
-
-- Kubernetes
-- Azure Kubernetes Service
-- CI/CD
+- Azure Container Apps
+- Azure Kubernetes Service (AKS)
+- Azure Container Registry
+- CI/CD Pipeline
+- Infrastructure as Code
 
 ---
 
-## Phase 5
-
-Enterprise AI
+## Phase 5 — Enterprise AI
 
 - Azure AI Search
+- Hybrid Search
+- Retrieval Planner
 - Agentic AI
-- Natural Language Querying
+- Natural Language Query Interface
+- AI-Powered Cloud Optimization Assistant
 
 ---
 
-# Project Philosophy
+# Vision
 
-This project is intentionally built as an engineering exercise rather than a prototype.
+The long-term vision is to build an AI-native Cloud Optimization Platform where structured operational knowledge replaces static reports.
 
-The focus is on:
+Instead of requiring large language models to process thousands of raw infrastructure objects, hierarchical knowledge enables deterministic retrieval of only the most relevant optimization context.
 
-- clean architecture
-- maintainable code
-- explicit business logic
-- configuration-driven behavior
-- explainable recommendations
-- AI-ready knowledge generation
-
-Every implementation decision is made with long-term extensibility in mind.
+This architecture significantly reduces token consumption, improves response quality, and provides a scalable foundation for enterprise AI use cases.
 
 ---
 
 # License
 
-This project is currently maintained as a personal learning and engineering project.
+This project is maintained as a personal engineering and learning initiative focused on enterprise architecture, cloud optimization, and AI-native systems design.
