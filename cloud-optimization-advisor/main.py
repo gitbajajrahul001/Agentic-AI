@@ -82,6 +82,12 @@ from app.aggregation.aggregation_engine import (
     AggregationEngine,
 )
 
+from app.core.constants import KnowledgeLevels
+
+from app.knowledge.knowledge_manager import (
+    KnowledgeManager,
+)
+
 
 console = Console()
 
@@ -146,11 +152,6 @@ def main():
                 "storage"
             ][
                 "account_name"
-            ],
-            container_name=config[
-                "storage"
-            ][
-                "container_name"
             ],
         )
     )
@@ -296,12 +297,22 @@ def main():
         metadata_configuration,
     )
     
+    ####################################################################
+    # Knowledge Engine
+    ####################################################################
+    
     knowledge_serializer = (
     KnowledgeSerializer()
     )
     
     knowledge_exporter = (
         KnowledgeExporter(
+        )
+    )
+    knowledge_manager = (
+        KnowledgeManager(
+            knowledge_exporter,
+            blob_storage_connector,
         )
     )
 
@@ -483,13 +494,9 @@ def main():
         )
 
         output_file = (
-            knowledge_exporter.export(
+            knowledge_manager.publish(
                 knowledge_document,
-            )
-        )
-        blob_name = (
-            blob_storage_connector.upload_file(
-                output_file,
+                KnowledgeLevels.VM,
             )
         )
 
@@ -517,10 +524,28 @@ def main():
 
         style="green",
     )
+    
+    
+    ###############################################################
+    # Aggregation Engine
+    ###############################################################
+        
+        
     aggregation_engine = AggregationEngine()
-    aggregation_engine.run(
-        exported_json_files
+    resource_group_documents = (
+        aggregation_engine.run(
+            exported_json_files,
+        )
     )
+    
+    for resource_group_document in resource_group_documents:
+
+        knowledge_manager.publish(
+
+            resource_group_document.model_dump(),
+
+            KnowledgeLevels.RESOURCE_GROUP,
+        )
 
     ####################################################################
     # Render

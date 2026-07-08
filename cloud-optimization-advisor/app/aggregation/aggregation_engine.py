@@ -18,18 +18,10 @@ class AggregationEngine:
             )
         )
 
-        resource_groups = (
+        resource_group_documents = (
             aggregator.aggregate(
                 vm_documents,
             )
         )
 
-        for resource_group in resource_groups:
-
-            print()
-
-            print(
-                resource_group.model_dump_json(
-                    indent=4
-                )
-            )
+        return resource_group_documents

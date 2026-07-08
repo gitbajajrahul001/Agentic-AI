@@ -1,3 +1,4 @@
+
 class AzureMetricNames:
     """
     Azure Monitor metric names.
@@ -39,3 +40,18 @@ class AzureApiVersions:
     METRIC_DEFINITIONS = "2023-10-01"
 
     METRICS = "2023-10-01"
+    
+class KnowledgeLevels:
+    """
+    Supported knowledge hierarchy levels.
+    """
+
+    VM = "vm"
+
+    RESOURCE_GROUP = "resource-group"
+
+    SUBSCRIPTION = "subscription"
+
+    MANAGEMENT_GROUP = "management-group"
+
+    ENTERPRISE = "enterprise"

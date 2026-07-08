@@ -4,6 +4,10 @@ from pathlib import Path
 
 from datetime import datetime
 
+from app.core.constants import (
+    KnowledgeLevels,
+)
+
 
 class KnowledgeExporter:
     """
@@ -12,59 +16,103 @@ class KnowledgeExporter:
 
     def __init__(
         self,
-        output_directory: str = "output/json",
+        output_root: str = "output",
     ):
 
-        self.output_directory = Path(
-            output_directory
+        self.output_root = Path(
+            output_root
         )
 
-        self.output_directory.mkdir(
+        self.output_root.mkdir(
             parents=True,
             exist_ok=True,
         )
 
+    
+    def _get_file_name(
+        self,
+        knowledge_document: dict,
+        knowledge_level: str,
+    ) -> str:
+
+        if knowledge_level == KnowledgeLevels.VM:
+
+            return (
+                knowledge_document["inventory"]["resource_name"]
+            )
+
+        if knowledge_level == KnowledgeLevels.RESOURCE_GROUP:
+
+            return (
+                knowledge_document["resource_group"]["name"]
+            )
+
+        raise ValueError(
+            f"Unsupported knowledge level: {knowledge_level}"
+        )
+    
+    
+    
+    
     def export(
         self,
         knowledge_document: dict,
+        knowledge_level: str,
     ) -> Path:
 
         execution = knowledge_document[
             "execution"
         ]
 
-        inventory = knowledge_document[
-            "inventory"
-        ]
+        
+        ##### REMOVED TIMESTAMP AND DATE FOLDER GENERATION #####
 
-        generated_at = datetime.fromisoformat(
+        # generated_at = datetime.fromisoformat(
 
-            execution[
-                "generated_at"
-            ]
+        #     execution[
+        #         "generated_at"
+        #     ]
 
+        # )
+
+        # date_folder = generated_at.strftime(
+        #     "%Y-%m-%d"
+        # )
+
+        # timestamp = generated_at.strftime(
+        #     "%Y%m%dT%H%M%SZ"
+        # )
+
+
+        resource_name = self._get_file_name(
+            knowledge_document,
+            knowledge_level,
         )
-
-        date_folder = generated_at.strftime(
-            "%Y-%m-%d"
+        
+        
+        knowledge_folder = (
+            self.output_root
+            /
+            f"{knowledge_level}-knowledge"
         )
-
-        timestamp = generated_at.strftime(
-            "%Y%m%dT%H%M%SZ"
+        knowledge_folder.mkdir(
+            parents=True,
+            exist_ok=True,
         )
+        
+        #### REMOVED DATE FOLDER GENERATION ####
 
-        resource_name = inventory[
-            "resource_name"
-        ]
+        # output_folder = (
 
-        output_folder = (
+        #     knowledge_folder
 
-            self.output_directory
 
-            / date_folder
+        #     / date_folder
 
-        )
+        # )
 
+        output_folder = knowledge_folder
+        
         output_folder.mkdir(
 
             parents=True,
@@ -79,7 +127,7 @@ class KnowledgeExporter:
 
             /
 
-            f"{timestamp}_{resource_name}.json"
+            f"{resource_name}.json"
 
         )
 

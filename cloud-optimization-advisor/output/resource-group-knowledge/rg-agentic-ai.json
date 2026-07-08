@@ -1,0 +1,32 @@
+{
+    "execution": {
+        "execution_id": "36b29795-e83a-482e-aee7-55338e0fdd20",
+        "generated_at": "2026-07-08T08:28:24.457277+00:00",
+        "policy_version": "1.0"
+    },
+    "resource_group": {
+        "name": "rg-agentic-ai",
+        "subscription_id": "24897839-6228-4983-9e64-035e30282968",
+        "location": "centralindia"
+    },
+    "inventory": {
+        "vm_count": 2
+    },
+    "optimization": {
+        "keep_current": 2,
+        "downsize": 0,
+        "upsize": 0,
+        "optimization_score": 100.0
+    },
+    "financial": {
+        "monthly_savings": 0.0,
+        "annual_savings": 0.0
+    },
+    "insights": {
+        "summary": "All virtual machines are appropriately sized."
+    },
+    "source_documents": [
+        "vm-agentic-ai",
+        "vm-agentic-ai2"
+    ]
+}
