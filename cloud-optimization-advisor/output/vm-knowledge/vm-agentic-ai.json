@@ -1,7 +1,7 @@
 {
     "execution": {
-        "execution_id": "36b29795-e83a-482e-aee7-55338e0fdd20",
-        "generated_at": "2026-07-08T08:28:24.457277+00:00",
+        "execution_id": "455ca1b8-40ed-43f6-8a7f-43668cb97850",
+        "generated_at": "2026-07-08T08:57:43.769858+00:00",
         "policy_version": "1.0"
     },
     "inventory": {
@@ -23,7 +23,7 @@
     },
     "observability": {
         "sample_count": 44,
-        "cpu_average_percent": 10.58,
+        "cpu_average_percent": 9.97,
         "memory_average_percent": 90.24
     },
     "analysis": {
@@ -35,7 +35,7 @@
             "reasons": [
                 {
                     "category": "CPU",
-                    "message": "Average CPU utilization (10.58%) is within the configured operating range."
+                    "message": "Average CPU utilization (9.97%) is within the configured operating range."
                 },
                 {
                     "category": "Memory",

@@ -1,7 +1,7 @@
 {
     "execution": {
-        "execution_id": "8127efd1-a487-41a3-bf11-0e6ea5e5fb15",
-        "generated_at": "2026-07-08T08:28:27.327996+00:00",
+        "execution_id": "b6cd736f-8c36-455b-8b54-c654bcf6a703",
+        "generated_at": "2026-07-08T08:57:46.318501+00:00",
         "policy_version": "1.0"
     },
     "inventory": {
@@ -23,7 +23,7 @@
     },
     "observability": {
         "sample_count": 21,
-        "cpu_average_percent": 3.94,
+        "cpu_average_percent": 3.04,
         "memory_average_percent": 76.05
     },
     "analysis": {
@@ -35,7 +35,7 @@
             "reasons": [
                 {
                     "category": "CPU",
-                    "message": "Average CPU utilization (3.94%) is below the configured downsize threshold (5%)."
+                    "message": "Average CPU utilization (3.04%) is below the configured downsize threshold (5%)."
                 },
                 {
                     "category": "Memory",

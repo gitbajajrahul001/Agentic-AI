@@ -532,7 +532,7 @@ def main():
         
         
     aggregation_engine = AggregationEngine()
-    resource_group_documents = (
+    resource_group_documents, subscription_documents = (
         aggregation_engine.run(
             exported_json_files,
         )
@@ -545,6 +545,15 @@ def main():
             resource_group_document.model_dump(),
 
             KnowledgeLevels.RESOURCE_GROUP,
+        )
+    
+    for subscription_document in subscription_documents:
+
+        knowledge_manager.publish(
+
+            subscription_document.model_dump(),
+
+            KnowledgeLevels.SUBSCRIPTION,
         )
 
     ####################################################################

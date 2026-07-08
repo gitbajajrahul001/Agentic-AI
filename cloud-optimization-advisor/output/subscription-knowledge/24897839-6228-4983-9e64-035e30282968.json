@@ -4,12 +4,11 @@
         "generated_at": "2026-07-08T08:57:43.769858+00:00",
         "policy_version": "1.0"
     },
-    "resource_group": {
-        "name": "rg-agentic-ai",
-        "subscription_id": "24897839-6228-4983-9e64-035e30282968",
-        "location": "centralindia"
+    "subscription": {
+        "subscription_id": "24897839-6228-4983-9e64-035e30282968"
     },
     "inventory": {
+        "resource_group_count": 1,
         "vm_count": 2
     },
     "optimization": {
@@ -26,7 +25,6 @@
         "summary": "All virtual machines are appropriately sized."
     },
     "source_documents": [
-        "vm-agentic-ai",
-        "vm-agentic-ai2"
+        "rg-agentic-ai"
     ]
 }
