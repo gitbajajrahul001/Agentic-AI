@@ -94,11 +94,6 @@ class VirtualMachineMetricsConnector(BaseAzureConnector):
             metrics,
         )
 
-        #print()
-        #print("Memory Average :", metrics.memory_average_percent)
-        #print("Memory Max     :", metrics.memory_max_percent)
-        #print("Memory P95     :", metrics.memory_p95_percent)
-        #print()
         
         return metrics
 
@@ -147,6 +142,8 @@ class VirtualMachineMetricsConnector(BaseAzureConnector):
 
         if not samples:
             return
+        
+        metrics.memory_metrics_available = True
 
         metrics.memory_average_percent = (
             Statistics.average(samples)
@@ -267,13 +264,19 @@ class VirtualMachineMetricsConnector(BaseAzureConnector):
         Counter:
             % Committed Bytes In Use
         """
+        
+        counter_name = (
+            "% Used Memory"
+            if vm.operating_system == "Linux"
+            else "% Committed Bytes In Use"
+        )
 
         query = f"""
 Perf
 | where TimeGenerated > ago({self.observation_window}d)
 | where _ResourceId == "{vm.id.lower()}"
 | where ObjectName == "Memory"
-| where CounterName == "% Committed Bytes In Use"
+| where CounterName == "{counter_name}"
 | project TimeGenerated, CounterValue
 | order by TimeGenerated asc
 """
@@ -286,6 +289,7 @@ Perf
             observation_end -
             timedelta(days=self.observation_window)
         )
+        
 
         result = self.logs_client.query_workspace(
             workspace_id=self.workspace_id,

@@ -309,12 +309,14 @@ def main():
         KnowledgeExporter(
         )
     )
+    
     knowledge_manager = (
-        KnowledgeManager(
-            knowledge_exporter,
-            blob_storage_connector,
-        )
+    KnowledgeManager(
+        knowledge_exporter,
+        blob_storage_connector,
+        config["storage"],
     )
+)
 
 
 

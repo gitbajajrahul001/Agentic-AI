@@ -11,10 +11,12 @@ class KnowledgeManager:
         self,
         exporter: KnowledgeExporter,
         blob_storage_connector,
+        storage_config: dict,
     ):
 
         self.exporter = exporter
         self.blob_storage_connector = blob_storage_connector
+        self.storage_config = storage_config
 
     def publish(
         self,
@@ -27,9 +29,15 @@ class KnowledgeManager:
             knowledge_level,
         )
 
+        container_name = (
+            self.storage_config["containers"][knowledge_level]
+        )
+    
+
+
         self.blob_storage_connector.upload_file(
             output_file,
-            knowledge_level,
+            container_name,
         )
 
         return output_file

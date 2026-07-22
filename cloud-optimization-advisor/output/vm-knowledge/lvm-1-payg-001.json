@@ -1,0 +1,53 @@
+{
+    "execution": {
+        "execution_id": "d2c7fc2b-a275-4e9b-b44f-b71a222a5caa",
+        "generated_at": "2026-07-22T17:31:56.390288+00:00",
+        "policy_version": "1.0"
+    },
+    "inventory": {
+        "resource_id": "/subscriptions/1bd99c72-ce0d-4c04-aab6-de58ef8fda86/resourceGroups/RG-PAYG-001/providers/Microsoft.Compute/virtualMachines/LVM-1-PAYG-001",
+        "resource_name": "lvm-1-payg-001",
+        "resource_type": "Microsoft.Compute/virtualMachines",
+        "subscription_id": "1bd99c72-ce0d-4c04-aab6-de58ef8fda86",
+        "resource_group": "rg-payg-001",
+        "location": "centralindia",
+        "current_sku": "Standard_D2as_v4",
+        "operating_system": "Linux",
+        "power_state": "VM running"
+    },
+    "metadata": {
+        "owner": "bajajrahul001@gmail.com"
+    },
+    "observability": {
+        "sample_count": 7,
+        "cpu_average_percent": 0.79,
+        "memory_average_percent": 5.77
+    },
+    "analysis": {
+        "recommendation": {
+            "pre_validation": "Insufficient Data",
+            "post_validation": "Keep Current Size",
+            "confidence": "Low",
+            "recommended_sku": "Standard_D2as_v4",
+            "reasons": [
+                {
+                    "category": "Telemetry",
+                    "message": "Only 7 telemetry samples were collected. At least 10 samples are required to produce a recommendation."
+                }
+            ]
+        },
+        "validation": {
+            "passed": true,
+            "candidate_evaluations": []
+        },
+        "cost": {
+            "currency": "USD",
+            "current_hourly_cost": 0.0622,
+            "recommended_hourly_cost": 0.0622,
+            "current_monthly_cost": 45.406,
+            "recommended_monthly_cost": 45.406,
+            "monthly_savings": 0.0,
+            "annual_savings": 0.0
+        }
+    }
+}

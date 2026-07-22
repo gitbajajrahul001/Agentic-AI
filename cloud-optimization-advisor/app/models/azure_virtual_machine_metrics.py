@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 
+from typing import Optional
 
 class AzureVirtualMachineMetrics(BaseModel):
     """
@@ -22,9 +23,11 @@ class AzureVirtualMachineMetrics(BaseModel):
     # Memory
     #
 
-    memory_average_percent: float = 0.0
-    memory_max_percent: float = 0.0
-    memory_p95_percent: float = 0.0
+    memory_average_percent: Optional[float] = None
+    memory_max_percent: Optional[float] = None
+    memory_p95_percent: Optional[float] = None
+
+    memory_metrics_available: bool = False
 
     #
     # Network

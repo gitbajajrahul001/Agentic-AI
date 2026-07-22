@@ -26,8 +26,8 @@ class AzureVirtualMachine(BaseModel):
     resource_group: str
     location: str
     vm_size: str
-    operating_system: Optional[str] = None
-    power_state: Optional[str] = None
+    operating_system: str | None = None
+    power_state: str | None = None
 
     tags: dict[str, str] = Field(default_factory=dict)
 

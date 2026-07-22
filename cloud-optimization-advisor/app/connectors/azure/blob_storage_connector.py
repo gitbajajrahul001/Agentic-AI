@@ -29,45 +29,16 @@ class BlobStorageConnector:
                 credential=credential,
             )
         )
-        
-    def ensure_container_exists(
-        self,
-        container_name: str,
-    ):
-        """
-        Create the container if it does not already exist.
-        """
-
-        container_client = (
-            self.blob_service_client.get_container_client(
-                container_name
-            )
-        )
-
-        if not container_client.exists():
-
-            container_client.create_container()
-
-
-
     def upload_file(
         self,
         file_path: Path,
-        knowledge_level: str,
+        container_name: str,
     ) -> str:
         """
         Upload a local knowledge document
         to Azure Blob Storage.
         """
 
-        container_name = (
-            f"{knowledge_level}-knowledge"
-        )
-        
-        self.ensure_container_exists(
-            container_name,
-        )
-            
         blob_name = (
             f"{file_path.parent.name}/"
             f"{file_path.name}"

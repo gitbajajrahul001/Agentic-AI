@@ -101,6 +101,10 @@ Resources
                     resource_group=row["resourceGroup"],
 
                     location=row["location"],
+                    
+                    operating_system=row.get("operatingSystem"),
+
+                    power_state=row.get("powerStateDisplay"),
 
                     vm_size=row["vmSize"],
 

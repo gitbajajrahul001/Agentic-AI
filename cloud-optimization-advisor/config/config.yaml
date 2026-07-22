@@ -1,19 +1,22 @@
 azure:
 
-  tenant_id: ""
+  tenant_id: "a1fc66b2-0613-42f5-a738-1f1e8a62bce0"
 
-  client_id: ""
+  client_id: "85ad9fcd-6b46-4a41-aa2d-2a84d917bf0a"
 
-  client_secret: ""
+  client_secret: "IXh8Q~eaBIRmVi5AYe4bpdzK6io93lNa4OAFpc-v"
 
 log_analytics:
-  workspace_id: ""
-  
+  workspace_id: "329d630c-30de-4fc1-bde7-6d04a6857e42"
+
 storage:
+  account_name: stpayg001
 
-  account_name: staccagenticai
-
-  container_name: finops-repo
+  containers:
+    vm: vm-knowledge-payg-001
+    resource_group: rg-knowledge-payg-001
+    subscription: sub-knowledge-payg-001
+    enterprise: estate-knowledge-payg-001
 
 observation_window: 30
 

@@ -48,7 +48,7 @@ class KnowledgeLevels:
 
     VM = "vm"
 
-    RESOURCE_GROUP = "resource-group"
+    RESOURCE_GROUP = "resource_group"
 
     SUBSCRIPTION = "subscription"
 
