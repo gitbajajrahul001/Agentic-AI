@@ -1,7 +1,7 @@
 {
     "execution": {
-        "execution_id": "9fe52478-b76b-4173-86b1-deee536321ed",
-        "generated_at": "2026-07-22T17:31:58.916413+00:00",
+        "execution_id": "439fdcb6-9828-4520-99ab-610650ec0219",
+        "generated_at": "2026-07-22T17:38:42.244867+00:00",
         "policy_version": "1.0"
     },
     "inventory": {
@@ -20,7 +20,7 @@
     },
     "observability": {
         "sample_count": 7,
-        "cpu_average_percent": 3.11,
+        "cpu_average_percent": 2.72,
         "memory_average_percent": 17.11
     },
     "analysis": {

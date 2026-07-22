@@ -1,7 +1,7 @@
 {
     "execution": {
-        "execution_id": "d2c7fc2b-a275-4e9b-b44f-b71a222a5caa",
-        "generated_at": "2026-07-22T17:31:56.390288+00:00",
+        "execution_id": "c7277c23-6a38-48f2-87c5-af9d690867c4",
+        "generated_at": "2026-07-22T17:38:40.090395+00:00",
         "policy_version": "1.0"
     },
     "inventory": {
@@ -20,8 +20,8 @@
     },
     "observability": {
         "sample_count": 7,
-        "cpu_average_percent": 0.79,
-        "memory_average_percent": 5.77
+        "cpu_average_percent": 0.72,
+        "memory_average_percent": 5.78
     },
     "analysis": {
         "recommendation": {
