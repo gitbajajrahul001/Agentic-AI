@@ -402,12 +402,50 @@ def main():
         # Candidate Evaluation
         ###############################################################
 
-        candidates = (
-            vm_sizing_engine.get_candidates(
-                vm.vm_size,
-                analysis.recommendation,
-            )
+        current_sku = sku_connector.get_vm_sku_by_name(
+            vm.vm_size
         )
+        print("\n----------------------------------")
+        print(f"Current VM Size : {vm.vm_size}")
+
+        if current_sku:
+            print(f"Current SKU Found : {current_sku.name}")
+            print(f"Family            : {current_sku.family}")
+            print(
+                f"vCPUs             : "
+                f"{current_sku.capability_int('vCPUsAvailable')}"
+            )
+            print(
+                f"Memory            : "
+                f"{current_sku.capability('MemoryGB')} GB"
+            )
+        else:
+            print("Current SKU NOT FOUND")
+
+        if current_sku is None:
+            candidates = []
+        else:
+            candidates = (
+                vm_sizing_engine.get_candidates(
+                    current_sku,
+                    analysis.recommendation,
+                )
+            )
+            
+        print(f"Candidate Count : {len(candidates)}")
+
+        for candidate in candidates:
+
+            print(
+                f"{candidate.name}"
+                f" | vCPU={candidate.capability_int('vCPUsAvailable')}"
+                f" | Memory={candidate.capability('MemoryGB')} GB"
+            )    
+        
+        
+        print(f"\nCandidate Count: {len(candidates)}")
+        for candidate in candidates:
+            print(candidate.name)
 
         for candidate in candidates:
 
@@ -415,6 +453,7 @@ def main():
                 vm,
                 candidate,
             )
+            print(f"{candidate.name} -> Passed: {summary.passed}")
 
             evaluation = CandidateEvaluation(
 

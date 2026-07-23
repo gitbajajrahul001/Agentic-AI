@@ -6,6 +6,9 @@ from app.recommendation.recommendation_action import (
     RecommendationAction,
 )
 
+from app.recommendation.ranked_vm_candidate import (
+    RankedVmCandidate,
+)
 
 class VmSizingEngine:
     """
@@ -25,57 +28,154 @@ class VmSizingEngine:
 
         self.supported_skus = supported_skus
 
-    ####################################################################
-    # Public API
-    ####################################################################
 
+    def _cpu_difference(
+        self,
+        current: AzureVmSku,
+        candidate: AzureVmSku,
+    ) -> int:
+
+        return abs(
+
+            current.capability_int("vCPUsAvailable")
+
+            -
+
+            candidate.capability_int("vCPUsAvailable")
+        )
+        
+    def _memory_difference(
+        self,
+        current: AzureVmSku,
+        candidate: AzureVmSku,
+    ) -> float:
+
+        current_memory = float(
+
+            current.capability(
+                "MemoryGB",
+                0,
+            )
+        )
+
+        candidate_memory = float(
+
+            candidate.capability(
+                "MemoryGB",
+                0,
+            )
+        )
+
+        return abs(
+            current_memory - candidate_memory
+        )
+        
+    def _architecture_penalty(
+        self,
+        current: AzureVmSku,
+        candidate: AzureVmSku,
+    ) -> int:
+
+        current_cpu = current.capability(
+            "CpuArchitectureType",
+            "",
+        )
+
+        candidate_cpu = candidate.capability(
+            "CpuArchitectureType",
+            "",
+        )
+
+        return 0 if current_cpu == candidate_cpu else 10
+    
+    def _family_penalty(
+        self,
+        current: AzureVmSku,
+        candidate: AzureVmSku,
+    ) -> int:
+
+        return 0 if current.family == candidate.family else 10
+    
+    def _calculate_score(
+        self,
+        current: AzureVmSku,
+        candidate: AzureVmSku,
+    ) -> float:
+
+        return (
+
+            self._cpu_difference(
+                current,
+                candidate,
+            )
+
+            +
+
+            self._memory_difference(
+                current,
+                candidate,
+            )
+
+            +
+
+            self._architecture_penalty(
+                current,
+                candidate,
+            )
+
+            +
+
+            self._family_penalty(
+                current,
+                candidate,
+            )
+
+        )
     def get_candidates(
         self,
-        current_vm_size: str,
+        current_sku: AzureVmSku,
         recommendation: RecommendationAction,
     ) -> list[AzureVmSku]:
 
-        sku_names = [
-            sku.name
-            for sku in self.supported_skus
-        ]
+        ranked_candidates = []
 
-        if current_vm_size not in sku_names:
+        for sku in self.supported_skus:
 
-            return []
+            if sku.name == current_sku.name:
+                continue
 
-        index = sku_names.index(
-            current_vm_size
-        )
+            ranked_candidates.append(
 
-        #
-        # Upsize
-        #
+                RankedVmCandidate(
 
-        if recommendation == RecommendationAction.UPSIZE:
+                    sku=sku,
 
-            return self.supported_skus[
-                index + 1 :
-            ]
+                    score=self._calculate_score(
+                        current_sku,
+                        sku,
+                    ),
 
-        #
-        # Downsize
-        #
-
-        if recommendation == RecommendationAction.DOWNSIZE:
-
-            return list(
-                reversed(
-                    self.supported_skus[
-                        :index
-                    ]
                 )
+
             )
 
-        #
-        # Keep Current Size
-        #
+        ranked_candidates.sort(
+            key=lambda candidate: candidate.score
+        )
+        
+        print("\nCandidate Ranking")
+
+        for candidate in ranked_candidates:
+
+            print(
+                f"{candidate.sku.name}"
+                f" | Score={candidate.score}"
+            )
 
         return [
-            self.supported_skus[index]
+
+            candidate.sku
+
+            for candidate in ranked_candidates
+
         ]

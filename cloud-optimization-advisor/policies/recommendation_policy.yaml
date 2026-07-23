@@ -7,13 +7,13 @@ telemetry:
   #
   # Observation window used for analysis.
   #
-  observation_window_days: 30
+  observation_window_days: 1
 
   #
   # Minimum number of metric samples required
   # before a recommendation can be trusted.
   #
-  minimum_sample_count: 10
+  minimum_sample_count: 5
 
   #
   # Minimum percentage of expected samples that
@@ -45,7 +45,7 @@ decision:
     # CPU must remain below this value before a
     # downsize can be considered.
     #
-    downsize_threshold: 5
+    downsize_threshold: 4
 
   memory:
 
@@ -59,7 +59,7 @@ decision:
     # Memory must remain below this value before a
     # downsize can be considered.
     #
-    downsize_threshold: 95
+    downsize_threshold: 70
 
 ####################################################################
 # Confidence Levels

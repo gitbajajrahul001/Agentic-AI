@@ -21,3 +21,29 @@ Perf
 Perf
 | where CounterName == "% Committed Bytes In Use"
 | summarize P95RAM = percentile(CounterValue, 95) by Computer
+
+
+
+=============
+Average RAM usage-LINUX
+=============
+
+Perf
+| where ObjectName == "Memory" and CounterName == "% Used Memory"
+| summarize AvgRAM = avg(CounterValue) by Computer
+
+=============
+Peak RAM usage-LINUX
+=============
+
+Perf
+| where ObjectName == "Memory" and CounterName == "% Used Memory"
+| summarize PeakRAM = max(CounterValue) by Computer
+
+=============
+95th percentile RAM-LINUX
+=============
+
+Perf
+| where ObjectName == "Memory" and CounterName == "% Used Memory"
+| summarize P95RAM = percentile(CounterValue, 95) by Computer

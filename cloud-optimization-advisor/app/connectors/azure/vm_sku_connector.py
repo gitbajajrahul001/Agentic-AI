@@ -30,6 +30,9 @@ class VmSkuConnector(BaseAzureConnector):
             credential,
             subscription_id,
         )
+        
+        self.vm_skus: list[AzureVmSku] = []
+
 
     ####################################################################
     # VM SKUs
@@ -80,7 +83,26 @@ class VmSkuConnector(BaseAzureConnector):
                 )
             )
 
-        return vm_skus
+        self.vm_skus = vm_skus
+
+        return self.vm_skus
+
+
+    ####################################################################
+    # Lookup
+    ####################################################################
+
+    def get_vm_sku_by_name(
+        self,
+        sku_name: str,
+    ) -> AzureVmSku | None:
+
+        for sku in self.vm_skus:
+
+            if sku.name.lower() == sku_name.lower():
+                return sku
+
+        return None
 
 
 

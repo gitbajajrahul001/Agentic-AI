@@ -1,9 +1,68 @@
 vm_sizes:
 
-  - Standard_B1s
+  # B-Series
   - Standard_B2s
   - Standard_B2ms
   - Standard_B4ms
   - Standard_B8ms
+
+  # D-Series
   - Standard_D2s_v5
   - Standard_D4s_v5
+  - Standard_D8s_v5
+  - Standard_D16s_v5
+
+  # E-Series
+  - Standard_E2s_v5
+  - Standard_E4s_v5
+  - Standard_E8s_v5
+  - Standard_E16s_v5
+
+  # F-Series
+  - Standard_F2s_v2
+  - Standard_F4s_v2
+  - Standard_F8s_v2
+  - Standard_F16s_v2
+
+######## AMD #########
+
+  # B-Series
+  - Standard_B2as_v2
+  - Standard_B2ats_v2
+  - Standard_B4as_v2
+  - Standard_B8as_v2
+
+  # D-Series
+  - Standard_D2as_v5
+  - Standard_D4as_v5
+  - Standard_D8as_v5
+  - Standard_D16as_v5
+
+  # E-Series
+  - Standard_E2as_v5
+  - Standard_E4as_v5
+  - Standard_E8as_v5
+  - Standard_E16as_v5
+
+  # F-Series
+  - Standard_F2as_v2
+  - Standard_F4as_v2
+  - Standard_F8as_v2
+  - Standard_F16as_v2
+
+###### ARM #######
+
+  # D-Series
+  - Standard_D2pls_v6
+  - Standard_D4pls_v6
+  - Standard_D8pls_v6
+  - Standard_D16pls_v6
+
+  # E-Series
+  - Standard_E2pls_v6
+  - Standard_E4pls_v6
+  - Standard_E8pls_v6
+  - Standard_E16pls_v6
+
+  # Compute Optimized (future expansion)
+  # Placeholder for future Arm compute SKUs as Azure expands the portfolio.
