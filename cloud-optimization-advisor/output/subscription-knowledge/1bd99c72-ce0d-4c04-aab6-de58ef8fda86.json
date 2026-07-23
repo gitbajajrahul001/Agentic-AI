@@ -1,7 +1,7 @@
 {
     "execution": {
-        "execution_id": "0fa4e2c6-bf89-430e-9160-9c864e9b6bb3",
-        "generated_at": "2026-07-23T12:23:06.607564+00:00",
+        "execution_id": "a937caeb-e1ee-4cd7-82d2-30c2232fcc55",
+        "generated_at": "2026-07-23T12:28:17.963674+00:00",
         "policy_version": "1.0"
     },
     "subscription": {
@@ -18,8 +18,8 @@
         "optimization_score": 100.0
     },
     "financial": {
-        "monthly_savings": -51.68400000000001,
-        "annual_savings": -620.2080000000001
+        "monthly_savings": 38.739639999999994,
+        "annual_savings": 464.87567999999993
     },
     "insights": {
         "summary": "All virtual machines are appropriately sized."

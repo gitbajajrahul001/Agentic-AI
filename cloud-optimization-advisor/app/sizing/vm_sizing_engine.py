@@ -102,35 +102,96 @@ class VmSizingEngine:
         candidate: AzureVmSku,
     ) -> float:
 
-        return (
+        score = 0.0
 
-            self._cpu_difference(
-                current,
-                candidate,
-            )
+        ############################################################
+        # CPU Similarity (40)
+        ############################################################
 
-            +
-
-            self._memory_difference(
-                current,
-                candidate,
-            )
-
-            +
-
-            self._architecture_penalty(
-                current,
-                candidate,
-            )
-
-            +
-
-            self._family_penalty(
-                current,
-                candidate,
-            )
-
+        current_cpu = current.capability_int(
+            "vCPUsAvailable"
         )
+
+        candidate_cpu = candidate.capability_int(
+            "vCPUsAvailable"
+        )
+
+        cpu_difference = abs(
+            current_cpu - candidate_cpu
+        )
+
+        score += max(
+            0,
+            40 - (cpu_difference * 10),
+        )
+
+        ############################################################
+        # Memory Similarity (40)
+        ############################################################
+
+        current_memory = float(
+            current.capability(
+                "MemoryGB",
+                0,
+            )
+        )
+
+        candidate_memory = float(
+            candidate.capability(
+                "MemoryGB",
+                0,
+            )
+        )
+
+        memory_difference = abs(
+            current_memory - candidate_memory
+        )
+
+        score += max(
+            0,
+            40 - (memory_difference * 2),
+        )
+
+        ############################################################
+        # Processor Architecture (5)
+        ############################################################
+
+        if (
+            current.capability("CpuArchitectureType")
+            ==
+            candidate.capability("CpuArchitectureType")
+        ):
+            score += 5
+
+        ############################################################
+        # VM Family (5)
+        ############################################################
+
+        if current.family == candidate.family:
+            score += 5
+
+        ############################################################
+        # VM Generation (10)
+        ############################################################
+
+        current_name = current.name.lower()
+
+        candidate_name = candidate.name.lower()
+
+        if "v6" in candidate_name:
+            score += 10
+
+        elif "v5" in candidate_name:
+            score += 8
+
+        elif "v4" in candidate_name:
+            score += 6
+
+        elif "v3" in candidate_name:
+            score += 4
+
+        return score
+    
     def get_candidates(
         self,
         current_sku: AzureVmSku,
@@ -160,7 +221,8 @@ class VmSizingEngine:
             )
 
         ranked_candidates.sort(
-            key=lambda candidate: candidate.score
+            key=lambda candidate: candidate.score,
+            reverse=True,
         )
         
         print("\nCandidate Ranking")
@@ -168,8 +230,8 @@ class VmSizingEngine:
         for candidate in ranked_candidates:
 
             print(
-                f"{candidate.sku.name}"
-                f" | Score={candidate.score}"
+                f"{candidate.sku.name:<25}"
+                f" Score={candidate.score:>5.1f}"
             )
 
         return [

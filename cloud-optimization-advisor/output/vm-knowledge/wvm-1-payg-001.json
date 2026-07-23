@@ -1,7 +1,7 @@
 {
     "execution": {
-        "execution_id": "0d1366ef-9803-4774-b512-b02d1415c4bd",
-        "generated_at": "2026-07-23T12:23:11.148653+00:00",
+        "execution_id": "c5f5c95b-8059-4ecf-b04f-a607a8693801",
+        "generated_at": "2026-07-23T12:28:24.425965+00:00",
         "policy_version": "1.0"
     },
     "inventory": {
@@ -20,7 +20,7 @@
     },
     "observability": {
         "sample_count": 23,
-        "cpu_average_percent": 1.41,
+        "cpu_average_percent": 1.3,
         "memory_average_percent": 17.28
     },
     "analysis": {
@@ -28,11 +28,11 @@
             "pre_validation": "Downsize",
             "post_validation": "Keep Current Size",
             "confidence": "High",
-            "recommended_sku": "Standard_B2ms",
+            "recommended_sku": "Standard_D2s_v5",
             "reasons": [
                 {
                     "category": "CPU",
-                    "message": "Average CPU utilization (1.41%) is below the configured downsize threshold (4%)."
+                    "message": "Average CPU utilization (1.30%) is below the configured downsize threshold (4%)."
                 },
                 {
                     "category": "Memory",
@@ -48,7 +48,7 @@
             "passed": true,
             "candidate_evaluations": [
                 {
-                    "candidate_sku": "Standard_B2ms",
+                    "candidate_sku": "Standard_D2s_v5",
                     "passed": true,
                     "summary": {
                         "passed": true,
@@ -86,7 +86,7 @@
                                 "rule": "Maximum Network Interfaces",
                                 "passed": true,
                                 "blocker": false,
-                                "message": "Candidate supports 3 network interface(s)."
+                                "message": "Candidate supports 2 network interface(s)."
                             },
                             {
                                 "domain": "Platform",
@@ -117,11 +117,11 @@
         "cost": {
             "currency": "USD",
             "current_hourly_cost": 0.0622,
-            "recommended_hourly_cost": 0.0976,
+            "recommended_hourly_cost": 0.035666,
             "current_monthly_cost": 45.406,
-            "recommended_monthly_cost": 71.248,
-            "monthly_savings": -25.842000000000006,
-            "annual_savings": -310.10400000000004
+            "recommended_monthly_cost": 26.03618,
+            "monthly_savings": 19.369819999999997,
+            "annual_savings": 232.43783999999997
         }
     }
 }
