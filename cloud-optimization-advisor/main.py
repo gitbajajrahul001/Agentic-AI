@@ -405,22 +405,30 @@ def main():
         current_sku = sku_connector.get_vm_sku_by_name(
             vm.vm_size
         )
-        print("\n----------------------------------")
-        print(f"Current VM Size : {vm.vm_size}")
+        
+        approved_sku_names = {
 
-        if current_sku:
-            print(f"Current SKU Found : {current_sku.name}")
-            print(f"Family            : {current_sku.family}")
-            print(
-                f"vCPUs             : "
-                f"{current_sku.capability_int('vCPUsAvailable')}"
+            sku.name
+
+            for sku in supported_skus
+
+        }
+
+        analysis.current_vm_is_policy_compliant = (
+
+            vm.vm_size in approved_sku_names
+
+        )
+
+        if not analysis.current_vm_is_policy_compliant:
+
+            analysis.policy_message = (
+
+                "Current VM SKU is outside the approved "
+
+                "enterprise VM catalog."
+
             )
-            print(
-                f"Memory            : "
-                f"{current_sku.capability('MemoryGB')} GB"
-            )
-        else:
-            print("Current SKU NOT FOUND")
 
         if current_sku is None:
             candidates = []
@@ -431,21 +439,6 @@ def main():
                     analysis.recommendation,
                 )
             )
-            
-        print(f"Candidate Count : {len(candidates)}")
-
-        for candidate in candidates:
-
-            print(
-                f"{candidate.name}"
-                f" | vCPU={candidate.capability_int('vCPUsAvailable')}"
-                f" | Memory={candidate.capability('MemoryGB')} GB"
-            )    
-        
-        
-        print(f"\nCandidate Count: {len(candidates)}")
-        for candidate in candidates:
-            print(candidate.name)
 
         for candidate in candidates:
 
@@ -453,7 +446,7 @@ def main():
                 vm,
                 candidate,
             )
-            print(f"{candidate.name} -> Passed: {summary.passed}")
+
 
             evaluation = CandidateEvaluation(
 
@@ -553,6 +546,32 @@ def main():
             report
         )
         
+    console.print()
+
+    console.print(
+        "[bold]Policy Assessment[/bold]"
+    )
+
+    if analysis.current_vm_is_policy_compliant:
+
+        console.print(
+            "    Status: "
+            "[green]Compliant[/green]"
+        )
+
+    else:
+
+        console.print(
+            "    Status: "
+            "[yellow]Outside Approved Catalog[/yellow]"
+        )
+
+        console.print(
+            f"    Reason: "
+            f"{analysis.policy_message}"
+        )
+    
+    
     console.print(
 
         f"✓ Exported {len(exported_json_files)} JSON knowledge document(s).",

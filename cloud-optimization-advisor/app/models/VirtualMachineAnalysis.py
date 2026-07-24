@@ -39,6 +39,14 @@ class VirtualMachineAnalysis(BaseModel):
         RecommendationConfidence.MEDIUM
     )
     
+    ####################################################################
+    # Policy
+    ####################################################################
+
+    current_vm_is_policy_compliant: bool = True
+
+    policy_message: str = ""
+    
 
 
     ####################################################################

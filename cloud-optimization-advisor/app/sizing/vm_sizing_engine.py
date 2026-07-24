@@ -96,101 +96,154 @@ class VmSizingEngine:
 
         return 0 if current.family == candidate.family else 10
     
-    def _calculate_score(
+    # def _calculate_score(
+    #     self,
+    #     current: AzureVmSku,
+    #     candidate: AzureVmSku,
+    # ) -> float:
+
+    #     score = 0.0
+
+
+    def _cpu_score(
         self,
-        current: AzureVmSku,
-        candidate: AzureVmSku,
+        current,
+        candidate,
     ) -> float:
 
-        score = 0.0
+        difference = abs(
 
-        ############################################################
-        # CPU Similarity (40)
-        ############################################################
+            current.capability_int(
+                "vCPUsAvailable"
+            )
 
-        current_cpu = current.capability_int(
-            "vCPUsAvailable"
+            -
+
+            candidate.capability_int(
+                "vCPUsAvailable"
+            )
+
         )
 
-        candidate_cpu = candidate.capability_int(
-            "vCPUsAvailable"
-        )
-
-        cpu_difference = abs(
-            current_cpu - candidate_cpu
-        )
-
-        score += max(
+        return max(
             0,
-            40 - (cpu_difference * 10),
+            40 - difference * 10,
         )
-
-        ############################################################
-        # Memory Similarity (40)
-        ############################################################
+        
+        
+    def _memory_score(
+        self,
+        current,
+        candidate,
+    ) -> float:
 
         current_memory = float(
+
             current.capability(
                 "MemoryGB",
                 0,
             )
+
         )
 
         candidate_memory = float(
+
             candidate.capability(
                 "MemoryGB",
                 0,
             )
+
         )
 
-        memory_difference = abs(
-            current_memory - candidate_memory
+        difference = abs(
+
+            current_memory
+
+            -
+
+            candidate_memory
+
         )
 
-        score += max(
+        return max(
             0,
-            40 - (memory_difference * 2),
+            40 - difference * 2,
+        )
+        
+        
+        
+        
+    def _generation_score(
+        self,
+        candidate,
+    ) -> float:
+
+        name = candidate.name.lower()
+
+        if "v6" in name:
+            return 10
+
+        if "v5" in name:
+            return 8
+
+        if "v4" in name:
+            return 6
+
+        return 4
+    
+    def _architecture_score(
+        self,
+        current,
+        candidate,
+    ) -> float:
+
+        return (
+
+            5
+
+            if
+
+            current.capability(
+                "CpuArchitectureType"
+            )
+
+            ==
+
+            candidate.capability(
+                "CpuArchitectureType"
+            )
+
+            else
+
+            0
+
+        )
+        
+    def _family_score(
+        self,
+        current,
+        candidate,
+    ) -> float:
+
+        return (
+
+            5
+
+            if
+
+            current.family
+
+            ==
+
+            candidate.family
+
+            else
+
+            0
+
         )
 
-        ############################################################
-        # Processor Architecture (5)
-        ############################################################
 
-        if (
-            current.capability("CpuArchitectureType")
-            ==
-            candidate.capability("CpuArchitectureType")
-        ):
-            score += 5
-
-        ############################################################
-        # VM Family (5)
-        ############################################################
-
-        if current.family == candidate.family:
-            score += 5
-
-        ############################################################
-        # VM Generation (10)
-        ############################################################
-
-        current_name = current.name.lower()
-
-        candidate_name = candidate.name.lower()
-
-        if "v6" in candidate_name:
-            score += 10
-
-        elif "v5" in candidate_name:
-            score += 8
-
-        elif "v4" in candidate_name:
-            score += 6
-
-        elif "v3" in candidate_name:
-            score += 4
-
-        return score
     
     def get_candidates(
         self,
@@ -200,10 +253,43 @@ class VmSizingEngine:
 
         ranked_candidates = []
 
+            
         for sku in self.supported_skus:
 
             if sku.name == current_sku.name:
                 continue
+
+            cpu_score = self._cpu_score(
+                current_sku,
+                sku,
+            )
+
+            memory_score = self._memory_score(
+                current_sku,
+                sku,
+            )
+
+            generation_score = self._generation_score(
+                sku,
+            )
+
+            architecture_score = self._architecture_score(
+                current_sku,
+                sku,
+            )
+
+            family_score = self._family_score(
+                current_sku,
+                sku,
+            )
+
+            total_score = (
+                cpu_score
+                + memory_score
+                + generation_score
+                + architecture_score
+                + family_score
+            )
 
             ranked_candidates.append(
 
@@ -211,17 +297,28 @@ class VmSizingEngine:
 
                     sku=sku,
 
-                    score=self._calculate_score(
-                        current_sku,
-                        sku,
-                    ),
+                    total_score=total_score,
+
+                    cpu_score=cpu_score,
+
+                    memory_score=memory_score,
+
+                    generation_score=generation_score,
+
+                    architecture_score=architecture_score,
+
+                    family_score=family_score,
 
                 )
 
             )
 
+
+
+
+
         ranked_candidates.sort(
-            key=lambda candidate: candidate.score,
+            key=lambda candidate: candidate.total_score,
             reverse=True,
         )
         
@@ -230,8 +327,26 @@ class VmSizingEngine:
         for candidate in ranked_candidates:
 
             print(
+                candidate.sku.name,
+                candidate.total_score,
+            )
+            
+            print(
+
                 f"{candidate.sku.name:<25}"
-                f" Score={candidate.score:>5.1f}"
+
+                f" Total={candidate.total_score:>5.1f}"
+
+                f" CPU={candidate.cpu_score:>4.0f}"
+
+                f" MEM={candidate.memory_score:>4.0f}"
+
+                f" GEN={candidate.generation_score:>4.0f}"
+
+                f" ARCH={candidate.architecture_score:>3.0f}"
+
+                f" FAM={candidate.family_score:>3.0f}"
+
             )
 
         return [
